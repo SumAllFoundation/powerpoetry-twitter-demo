@@ -5,5 +5,5 @@ $ sudo apt-get install gfortran liblapack-dev
 
 To build the stack, run the following command from the top level of the repo.
 ```
-$ src/waf configure clean build
+$ ./waf configure clean build
 ```
