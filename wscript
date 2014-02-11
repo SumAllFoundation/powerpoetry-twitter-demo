@@ -25,6 +25,11 @@ def venv(cmd):
     return os.linesep.join((". env/bin/activate", cmd, "deactivate"))
 
 
+def start(ctx):
+    print("→ Starting twitter poll...")
+    ctx.exec_command(venv("python -m pptwitter"))
+
+
 def style(ctx):
     print("→ Running flake8 on python code...")
     ctx.exec_command(venv("flake8 pptwitter"))
