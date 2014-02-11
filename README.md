@@ -34,6 +34,11 @@ access_token_secret = <twitter-access-secret>
 processes = <# number of processes to spawn>
 interval = <interval to fetch tweets at in seconds>
 query = <query to search for, example: #basketball>
+
+[PoetryPercentileRanker]
+coca = <path to coca.json>
+inquirer = <path to inquirer.json>
+percentiles = <path to percentiles.csv>
 ```
 
 ## Running the poller

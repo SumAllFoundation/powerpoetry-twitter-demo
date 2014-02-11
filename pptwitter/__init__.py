@@ -7,7 +7,7 @@ from tweepy import API, OAuthHandler
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)s: %(message)s",
-    level=logging.DEBUG)
+    level=logging.INFO)
 
 
 config_path = os.path.join("config.ini")

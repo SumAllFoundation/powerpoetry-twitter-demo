@@ -43,4 +43,5 @@ nosetests.xml
 # virtualenv
 env/
 
+data/
 config.ini
