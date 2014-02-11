@@ -1,5 +1,6 @@
 from __future__ import division
 
+import ConfigParser
 import logging
 import numpy as np
 import os
@@ -11,7 +12,7 @@ import time
 from multiprocessing import Pool
 from tweepy import Cursor
 
-from . import api, config
+from . import api, config, config_path
 from .poetry_percentile_rank import PercentilePoetryRanker
 
 
@@ -48,7 +49,18 @@ class TweetPoller(object):
 
     count = config.get("Poller", "count")
 
-    since_id = None
+    @property
+    def since_id(self):
+        try:
+            return config.get("Twitter", "since_id")
+        except ConfigParser.NoOptionError:
+            return None
+
+    @since_id.setter
+    def since_id(self, id):
+        config.set("Twitter", "since_id", id)
+        with open(config_path, "wb") as configfile:
+            config.write(configfile)
 
     def sleep_until(self, nextpoll):
         sleeptime = nextpoll - time.time()
