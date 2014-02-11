@@ -43,8 +43,4 @@ nosetests.xml
 # virtualenv
 env/
 
-# data
-data/
-figs/
-nets/
-*.rif
+config.ini

@@ -25,6 +25,11 @@ def venv(cmd):
     return os.linesep.join((". env/bin/activate", cmd, "deactivate"))
 
 
+def style(ctx):
+    print("→ Running flake8 on python code...")
+    ctx.exec_command(venv("flake8 pptwitter"))
+
+
 def build(ctx):
     ctx(rule="virtualenv .", target="bin/python")
     ctx.template(
