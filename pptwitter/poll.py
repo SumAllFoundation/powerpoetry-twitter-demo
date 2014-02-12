@@ -80,7 +80,7 @@ class TweetPoller(object):
             # Put score into redis and create a link to some server to show scores.
             self.update_status(tweet, score)
 
-    def update_status(tweet, score):
+    def update_status(self, tweet, score):
         avgscore = sum(score.values()) / len(score)
         screen_name = tweet.user.screen_name
         logger.info('%s @%s %s...: %.1f%%' % (tweet.id, screen_name, tweet.text[:20], avgscore))
