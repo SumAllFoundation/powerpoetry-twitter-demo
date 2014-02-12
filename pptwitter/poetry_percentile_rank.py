@@ -205,7 +205,7 @@ def ngram(poems, coca):
             except:
                 # Check if words exists in WordNet
                 word_exists = lambda idx: wordnet.synsets(wordTuple[idx])
-                if word_exists(0) and word_exists[1] and word_exists[2]:
+                if word_exists(0) and word_exists(1) and word_exists(2):
                     infrequentTri[i] += 1 / wordCount[i]
                     nw += 1
                     count = 10
