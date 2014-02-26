@@ -21,6 +21,3 @@ class Model(db.Model):
 
 
 db.Model = Model
-
-
-redis_paypal = Redis(host="localhost", port=4003, db=3)
