@@ -4,11 +4,7 @@
 pptwitter.config(['$routeProvider', function($routeProvider) {
     console.log('Setting up routes...');
     $routeProvider.
-        when('/', {redirectTo: '/home'}).
-        when('/home', {
-            templateUrl: 'static/partials/home.html',
-            controller: 'HomeCtrl'
-        }).
+        when('/', {redirectTo: '/poetic/1'}).
         when('/poetic/:tweet', {
             templateUrl: 'static/partials/poetic.html',
             controller: 'PoeticCtrl',
@@ -53,13 +49,6 @@ pptwitter.controller('AppCtrl', function($rootScope, $scope, $timeout, $location
         Data.loading = false;
         Data.flash(rejection);
     });
-});
-
-
-pptwitter.controller('HomeCtrl', function($scope, Data) {
-    console.log('Loading HomeCtrl...');
-    $scope.Data = Data;
-    window.location = 'http://www.powerpoetry.org';
 });
 
 
