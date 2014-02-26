@@ -13,16 +13,18 @@
         </div>
       </div>
       <div class="col-sm-8">
-        <h2 class="score pull-left">
-          ((averageScore | number:2))%
-        </h2>
-
         <div>
-          <br/><strong>&ldquo;</strong> ((tweet.text)) <strong>&rdquo;</strong><br/>
-          <i>-<a href="http://twitter.com/((tweet.tweeted_by))">((tweet.tweeted_by))</a></i>
+          <h2 class="score pull-left">
+            ((averageScore | number:2))%
+          </h2>
+
+          <div>
+            <br/><strong>&ldquo;</strong> ((tweet.text)) <strong>&rdquo;</strong><br/>
+            <i>-<a href="http://twitter.com/((tweet.tweeted_by))">((tweet.tweeted_by))</a></i>
+          </div>
         </div>
 
-        <br/><br/>
+        <br/>
         <pre>
           Poetic: ((tweet.score.poetic))%
           Sentiment: ((tweet.score.sentiment))%
