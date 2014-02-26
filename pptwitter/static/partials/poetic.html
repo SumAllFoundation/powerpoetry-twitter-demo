@@ -13,12 +13,6 @@
         </div>
       </div>
       <div class="col-sm-8">
-        <pre class="breakdown">
-          Poetic: ((tweet.score.poetic))%
-          Sentiment: ((tweet.score.sentiment))%
-          Language: ((tweet.score.language))%
-        </pre>
-
         <div>
           <h2 class="score pull-left">
             ((averageScore | number:2))%
@@ -29,6 +23,12 @@
             <i>-<a href="http://twitter.com/((tweet.tweeted_by))">((tweet.tweeted_by))</a></i>
           </div>
         </div>
+
+        <pre class="breakdown">
+          Poetic: ((tweet.score.poetic))%
+          Sentiment: ((tweet.score.sentiment))%
+          Language: ((tweet.score.language))%
+        </pre>
       </div>
     </div>
   </div>
