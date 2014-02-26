@@ -60,7 +60,7 @@ def process_page(page, config_since_id):
         logger.info("%s: @%s Your poem scored %.1f%%" % (tweet.id, screen_name, avgscore))
         config_since_id.value = tweet.id
         if flask.config.get("TWITTER", "update_status"):
-            link = "http://f49b3c5.ngrok.com/?route=poetic/%s" % local_tweet_id
+            link = "%s/?route=poetic/%s" % (flask.config.get("DOMAIN"), local_tweet_id)
             message_tmpl = "@%s Your poem scored %.1f%%. For a detailed explanation see: %s"
             status = message_tmpl % (screen_name, avgscore, link)
             try:
