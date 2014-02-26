@@ -15,6 +15,7 @@ Options:
     inquirer: Inquirer (Inquirer bag of words).
     coca: COCA dictionaries.
 """
+from __future__ import division
 
 import getopt
 import logging
@@ -39,7 +40,6 @@ logger = logging.getLogger()
 # Extract Features
 def ngram(poems, coca):
     # N-gram Function
-    coca_word_count = 450000000
     # Import
     wnl = WordNetLemmatizer()
     # Setting up the params
@@ -73,6 +73,11 @@ def ngram(poems, coca):
     # Punct Count
     punctFreq = np.zeros(len(poems))
 
+    #COCA Dictionary
+    w1 = {tuple(re.findall('[a-zA-Z]+', item[0])): int(item[1]) for item in coca['w1']}
+    w2 = {tuple(re.findall('[a-zA-Z]+', item[0])): int(item[1]) for item in coca['w2']}
+    w3 = {tuple(re.findall('[a-zA-Z]+', item[0])): int(item[1]) for item in coca['w3']}
+
     # calculate the frequency distribution for n-grams.
     for i, sentTokenizedPoem in enumerate(sentTokenizedPoems):
         # print 'Unigram: Poem ' + str(i) + ': '
@@ -103,10 +108,6 @@ def ngram(poems, coca):
         # Lemmatized Word + COCA PoS
         lemmatized = [(wnl.lemmatize(t[0], penn_to_wordnet(t[1])), penn_to_coca([1]))
                       for t in filtered]
-        # COCA Dictionary
-        w1 = {item[0]: item[1] for item in coca['w1']}
-        w2 = {item[0]: item[1] for item in coca['w2']}
-        w3 = {item[0]: item[1] for item in coca['w3']}
 
         # UNIGRAM MEASUREMENT
         nw = 0
@@ -143,8 +144,7 @@ def ngram(poems, coca):
                         #print (wordTuple, ' not recognized.')
             # Calculate Frequency if count different than zero.
             if count > 0:
-                unigramFreq[i] = (1 / (nw)) * (count / coca_word_count) + \
-                    ((nw - 1) / (nw)) * unigramFreq[i]
+                unigramFreq[i] = (1. / nw) * count + ((nw - 1.) / nw) * unigramFreq[i]
 
         # BIGRAM FUNCTION:
         # print 'Bigram: Poem ' + str(i) + ': '
@@ -176,8 +176,7 @@ def ngram(poems, coca):
                     #print (wordTuple, ' is infrequent')
             # Append Frequency
             if count > 0:
-                bigramFreq[i] = (1 / (nw)) * (count) + \
-                    ((nw - 1) / (nw)) * bigramFreq[i]
+                bigramFreq[i] = (1. / nw) * count + ((nw - 1.) / nw) * bigramFreq[i]
 
         # TRIGRAMS
         # print 'Trigram: Poem ' + str(i) + ': '
@@ -212,14 +211,17 @@ def ngram(poems, coca):
                     #print (wordTuple, ' is infrequent')
             # Append Frequency
             if count > 0:
-                trigramFreq[i] = (1 / (nw)) * (count) + \
-                    ((nw - 1) / (nw)) * trigramFreq[i]
+                trigramFreq[i] = (1. / nw) * count + ((nw - 1.) / nw) * trigramFreq[i]
+
         # Log Frequnecy
         bigramFreq[i] = np.log(bigramFreq[i])
         trigramFreq[i] = np.log(trigramFreq[i])
+        unigramFreq[i] = np.log(unigramFreq[i])
 
-    return(unigramFreq, bigramFreq, trigramFreq, misspeltWord,
-           sentence_count, logWordCount, punctFreq)
+    return (
+        unigramFreq, bigramFreq, trigramFreq, misspeltWord,
+        sentence_count, logWordCount, punctFreq
+    )
 
 
 # Utilities
@@ -343,11 +345,9 @@ def sound(poems):
                 if nextfp and lastfp:
                     # First Phenome for consecutive words. Hence [0]
                     if nextfp[0] in lastfp[0] and not re.search(r'\d+', nextfp[0]):
-                        logger.debug(
-                            'Alliteration match: %s %s',
-                            nextfp,
-                            lastfp)
-                        alliterFreq[i] += (1 / total_words)
+                        logger.debug('Alliteration match: %s %s', nextfp, lastfp)
+                        alliterFreq[i] += (1. / total_words)
+
         ###################################################
         ###########Perfect and Slant Rhymes################
         ##################################################
@@ -418,11 +418,11 @@ def sound(poems):
                             cond = (spprim[-1] == spsec[-1])
                             # Perfect Rhyme
                             if cona and conb and conc:
-                                perfectRhymeFreq[i] += (1 / len(windows[0]))
+                                perfectRhymeFreq[i] += (1. / len(windows[0]))
                                 # print 'Perfect:  ',vpprim, vpsec, spprim, spsec
                             # Slant Rhyme
                             if conb ^ cond:
-                                slantRhymeFreq[i] += (1 / len(windows[0]))
+                                slantRhymeFreq[i] += (1. / len(windows[0]))
                                 # print 'Slant: ',vpprim, vpsec, spprim, spsec
 
     return(perfectRhymeFreq, slantRhymeFreq, alliterFreq)
@@ -520,20 +520,32 @@ def sentiment(poems, inquirer):
 class PercentilePoetryRanker(object):
 
     columns = [
-        'perfectRhymeFreq', 'slantRhymeFreq', 'Polit', 'Race', 'Relig', 'PosNeg',
-        'unigramFreq', 'bigramFreq', 'trigramFreq', 'misspeltWord', 'sentence_count',
+        'perfectRhymeFreq', 'slantRhymeFreq', 'alliterFreq', 'Polit', 'Race', 'Relig',
+        'PosNeg', 'unigramFreq', 'bigramFreq', 'trigramFreq', 'misspeltWord', 'sentence_count',
         'wordCount', 'punctFreq'
     ]
 
     def __init__(self, inquirer_filename, coca_filename, percentiles_filename):
         self.percentiles = pd.read_csv(percentiles_filename)
-        self.benchmarks = self.percentiles[self.columns]
+        self.benchmarks = self.percentiles
 
         with open(inquirer_filename) as f:
             self.inquirer = json.loads(f.read())
 
         with open(coca_filename) as f:
             self.coca = json.loads(f.read())
+
+    def percentile_subset(self, data):
+        #Sentiment - Descending
+        sentiment = -data['PosNeg']
+        #Language Mastery - ngrams, misspeltword. All Ascending
+        language = data[['unigramFreq', 'bigramFreq', 'trigramFreq', 'misspeltWord']].mean(axis=1)
+        #Poetic - perfect, slant, alliteration. Descending
+        poetic = -data[['perfectRhymeFreq', 'slantRhymeFreq', 'alliterFreq']].mean(axis=1)
+        #Save to File
+        percentile = pd.DataFrame([sentiment, language, poetic]).T
+        percentile.columns = ['sentiment', 'language', 'poetic']
+        return percentile
 
     def rank(self, data):
         ABS, EnlTot, Female, Male, Object, Polit, Race, Relig, St, WlbPhycs, WlbPsyc, PosNeg = \
@@ -548,15 +560,15 @@ class PercentilePoetryRanker(object):
 
         # Output just few features
         features = pd.DataFrame([
-            perfectRhymeFreq, slantRhymeFreq, Polit, Race, Relig, PosNeg,
-            unigramFreq, bigramFreq, trigramFreq, misspeltWord, sentence_count,
+            perfectRhymeFreq, slantRhymeFreq, alliterFreq, Polit, Race, Relig,
+            PosNeg, unigramFreq, bigramFreq, trigramFreq, misspeltWord, sentence_count,
             logWordCount, punctFreq
         ]).transpose()
         features.columns = self.columns
 
         return ({
             k: self.rank_feature(k, v) for k, v in f.iteritems()
-        } for _, f in features.iterrows())
+        } for _, f in self.percentile_subset(features).iterrows())
 
     def rank_feature(self, feature, value):
         return int(sp.stats.percentileofscore(self.benchmarks[feature], value))

@@ -1,0 +1,52 @@
+#!/bin/bash
+set -eu
+
+
+self="`basename \"$0\"`"
+root="`dirname \"$VIRTUAL_ENV\"`"
+
+LOGDIR="$VIRTUAL_ENV/log"
+REDIS_CLI=`which redis-cli`
+pidfile="$VIRTUAL_ENV/run/redis.pid"
+CONFIG_FILE="$VIRTUAL_ENV/etc/conf/redis.conf"
+LISTENING_PORT={port}
+
+
+if [ -f "$pidfile" ]
+then
+    PID=`cat "$pidfile"`
+    RUNNING=`ps -p $PID | grep redis || true`
+    if [ ! -n "$RUNNING" ]
+    then
+        rm "$pidfile"
+    fi
+fi
+
+case "${{1-}}" in
+  start)
+    if [ ! -f "$pidfile" ]
+    then
+      echo -n 1>&2 "Starting redis on port $LISTENING_PORT: "
+      echo -n 1>&2 `redis-server $CONFIG_FILE`
+      echo -n 1>&2 'done'
+    fi
+    ;;
+  stop)
+    if [ -f "$pidfile" ]
+    then
+      echo -n 1>&2 "Stopping redis on port $LISTENING_PORT: "
+      # REDIS_CLI returns status 1 even when successful
+      $REDIS_CLI -p $LISTENING_PORT SHUTDOWN > /dev/null 2>&1 || true
+      while [ -f "$pidfile" ]
+      do
+  echo '.'
+  sleep 1
+      done
+      echo -n 1>&2 ' done'
+    fi
+    ;;
+  *)
+    echo -n 1>&2 "usage: $0 start|stop"
+    exit 1
+    ;;
+esac

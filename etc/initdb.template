@@ -1,0 +1,45 @@
+#!/bin/bash
+set -eu
+
+self="`basename $0`"
+root="`dirname \"$VIRTUAL_ENV\"`"
+
+PGDATA="$VIRTUAL_ENV/postgres/data"
+PGMARK="$VIRTUAL_ENV/postgres/.done"
+PGPORT={port}
+DBNAME={dbname}
+TESTDBNAME=test_{dbname}
+PGPASSWORD="root"
+export PGDATA PGPASSWORD
+
+if [ -f "$PGMARK" ]; then
+    echo 1>&2 "$self: Already initialized. Skipping..."
+    exit 0
+fi
+
+# Security not so tight..
+PGPASSWORDFILE="pgpass.txt"
+echo $PGPASSWORD > $PGPASSWORDFILE
+echo 1>&2 "$self: Initializing Postgres Master DB..."
+echo -n 1>&2 "$self: "; $VIRTUAL_ENV/bin/initdb --encoding=UNICODE \
+                       --pwfile=$PGPASSWORDFILE --username=postgres --auth=md5
+
+echo -n 1>&2 "$self: "; $VIRTUAL_ENV/etc/init.d/postgres start
+sleep 3
+echo 1>&2 "$self: Creating {dbname} database and user ..."
+(
+  cat <<-EOF
+    CREATE USER {dbname} WITH PASSWORD '$PGPASSWORD';
+    CREATE EXTENSION HSTORE;
+    CREATE DATABASE {dbname} OWNER {dbname} ENCODING 'UNICODE';
+    CREATE DATABASE test_{dbname} OWNER {dbname} ENCODING 'UNICODE';
+EOF
+) | psql --port=$PGPORT --username=postgres postgres
+
+echo 1>&2 "$self: Creating hstore extension ..."
+echo "CREATE EXTENSION HSTORE;" | psql --port=$PGPORT --username=postgres {dbname}
+echo "CREATE EXTENSION HSTORE;" | psql --port=$PGPORT --username=postgres test_{dbname}
+
+echo -n 1>&2 "$self: "; $VIRTUAL_ENV/etc/init.d/postgres stop
+echo 1>&2 "$self: Initialized Postgres DB"
+exit 0

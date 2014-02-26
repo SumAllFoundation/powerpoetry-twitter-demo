@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html ng-app="pptwitter">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Poetry - How poetic is your Tweet?</title>
+    <!--[if IE]><script src="bower_components/html5shiv/dist/html5shiv.js"></script><![endif]-->
+
+    <!-- Source mapped -->
+    <script type="text/javascript" src="{{ url_for("static",
+        filename="components/jquery/jquery.min.js") }}"></script>
+
+    <script>
+    // Fake console for IE < 10
+    if(!window.console) {
+      console = {
+        log: function() {}
+      };
+    }
+
+    // Extracts query params from query string
+    function getQueryVariable(variable) {
+      var query = window.location.search.substring(1);
+      var vars = query.split('&');
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=');
+        if (decodeURIComponent(pair[0]) == variable) {
+            return decodeURIComponent(pair[1]);
+        }
+      }
+    }
+
+    // Route forwarding
+    var route = getQueryVariable('route');
+    if (route) {
+        var query = window.location.search.substring(1);
+        var vars = $.grep(query.split('&'), function(v) {
+            return decodeURIComponent(v.split('=')[0]) != 'route';
+        });
+        window.location = '/?' + vars.join('&') + '#/' + route;
+    }
+
+    window.user = {{ logged_in_user | tojson }};
+    </script>
+
+    <!-- Source mapped -->
+    <script type="text/javascript" src="{{ url_for("static",
+        filename="components/angular/angular.min.js") }}"></script>
+
+    {% assets output="gen/pptwitter-deps-bundle.js",
+        "components/jquery-ui/ui/minified/jquery-ui.min.js",
+        "components/lodash/dist/lodash.min.js",
+        "components/select2/select2.min.js",
+        "components/angular-route/angular-route.min.js",
+        "components/angular-ui/build/angular-ui.min.js",
+        "components/angular-bootstrap/ui-bootstrap-tpls.min.js",
+        "components/angular-ui-date/src/date.js" %}
+      <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+
+    {% assets filters="uglifyjs", output="gen/pptwitter-bundle.js",
+        "js/pptwitter.js",
+        "js/api.js",
+        "js/services.js",
+        "js/filters.js",
+        "js/directives.js",
+        "js/controllers.js" %}
+      <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+
+    <link rel="stylesheet" href="{{ url_for("static",
+        filename="components/jquery-ui/themes/redmond/jquery-ui.min.css") }}"/>
+    <link rel="stylesheet" href="{{ url_for("static",
+        filename="components/bootstrap/dist/css/bootstrap.min.css") }}"/>
+
+    {% assets output="gen/pptwitter-css.css",
+        "css/theme.css" %}
+      <link rel="stylesheet" href="{{ ASSET_URL }}"/>
+    {% endassets %}
+
+    <link rel="shortcut icon" type="image/x-icon"
+        href="{{ url_for("static", filename="img/favicon.ico") }}"/>
+
+    <link rel="icon" type="image/x-icon"
+        href="{{ url_for("static", filename="img/favicon.ico") }}"/>
+  </head>
+
+  <body>
+    <div ng-controller="AppCtrl">
+      <div class="title">
+        <a href="http://www.powerpoetry.org" title="powerpoetry.org">
+          <img src="{{ url_for("static", filename="img/powerpoetry_logo_0.jpg") }}"/>
+        </a>
+      </div>
+      <div class="spinner" ng-show="Data.loading">
+        <img src="{{ url_for("static", filename="img/ajax-loader.gif") }}"/>
+      </div>
+
+      <div class="content main-content">
+        <div ng-show="Data.message" class="alert alert-((Data.level)) text-center flash">
+          <a class="pull-right" ng-click="Data.message = null">
+            <i class="glyphicon glyphicon-remove"></i>
+          </a>
+          (( Data.message ))<br/>
+        </div>
+
+        <div ng-view class="main"></div>
+      </div>
+
+    </div>
+
+    <footer class="container text-center">
+      <ul class="list-inline"><li class="first leaf"><a href="/about">About</a></li>
+        <li><a href="http://powerpoetry.org/blog">Blog</a></li>
+        <li><a href="http://powerpoetry.org/about/who-we-are">Team</a></li>
+        <li><a href="http://powerpoetry.org/partners">Partners</a></li>
+        <li><a href="http://powerpoetry.org/privacy">Privacy</a></li>
+        <li><a href="http://powerpoetry.org/help">Help</a></li>
+        <li><a href="http://powerpoetry.org/jobs">Jobs</a></li>
+        <li><a href="http://powerpoetry.org/contact">Contact</a></li>
+      </ul>
+      <div class="text-center">&nbsp;  &#169; Power Poetry</div>
+    </footer>
+  </body>
+
+  <script type="text/ng-template" id="confirmDialog.html">
+    <div class="modal-header">
+      <a class="pull-right">
+        <i class="glyphicon glyphicon-remove" ng-click="$close(false)"></i>
+      </a>
+      <h4>Confirm</h4>
+    </div>
+    <div class="modal-body">
+      (( message ))
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-warning" ng-click="$close(false)">
+        Cancel
+      </button>
+      <button class="btn btn-success" ng-click="$close(true)">
+        Ok
+      </button>
+    </div>
+  </script>
+</html>

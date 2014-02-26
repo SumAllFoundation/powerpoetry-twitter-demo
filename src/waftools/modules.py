@@ -2,14 +2,14 @@
 # encoding: utf-8
 import os
 import shutil
+import tarfile
 
 from waflib.Configure import conf
 
 
 @conf
-def template_renderer(ctx, srcpath, dstpath, format=True, executable=False):
-    print format
-    kwargs = {"VIRTUAL_ENV": ctx.out_dir}
+def template_renderer(ctx, srcpath, dstpath, format=True, executable=False, **kwargs):
+    kwargs.update({"VIRTUAL_ENV": ctx.out_dir})
     kwargs.update(os.environ)
     dstpath = os.path.join(ctx.out_dir, dstpath)
     with open(srcpath, "r") as src:
@@ -23,10 +23,12 @@ def template_renderer(ctx, srcpath, dstpath, format=True, executable=False):
 
 @conf
 def template(ctx, srcpath, **kwargs):
-    fmt = kwargs.pop("format", True)
-    exe = kwargs.pop("executable", False)
     tgtpath = kwargs.get("target")
-    rule = ctx(rule=lambda target: ctx.template_renderer(srcpath, tgtpath, fmt, exe), **kwargs)
+    opts = kwargs.pop("template_args", {})
+    opts.update(dict(
+        format=kwargs.pop("format", True),
+        executable=kwargs.pop("executable", False)))
+    rule = ctx(rule=lambda target: ctx.template_renderer(srcpath, tgtpath, **opts), **kwargs)
     ctx.add_manual_dependency(tgtpath, ctx.path.find_node(srcpath))
     return rule
 
@@ -56,12 +58,20 @@ def module(ctx, module, configure="", numthreads=4, **kwargs):
 
 
 @conf
-def symlink_freetype(ctx, target):
-    includepath = os.path.join(ctx.out_dir, "include")
-    srcpath = "/usr/X11/include/freetype2/freetype"
-    dstpath = os.path.join(includepath, "freetype")
-    if not os.path.exists(dstpath):
-        os.symlink(srcpath, dstpath)
+def build_gevent(ctx, target):
+    srcpath = ctx.env.SRCPATH
+    module = "gevent-0.13.8"
+    ctx.venv_exec("""
+        base="%(module)s"
+        pushd %(srcpath)s/3rdparty/site-packages
+        rm -fr "$base"
+        tar xzf "$base.tar.gz"
+        pushd "$base"
+        python setup.py install -I"$VIRTUAL_ENV/include" -L"$VIRTUAL_ENV/lib"
+        popd
+        rm -fr "$base"
+        popd
+    """ % locals())
 
 
 @conf
@@ -139,9 +149,20 @@ def build_postgresql(ctx, target):
 
 @conf
 def build_mathjax(ctx, target):
+    cmd = "from IPython.frontend.html import notebook; print notebook.__file__"
+    nbfile = ctx.venv_exec("echo \"%s\" | python" % cmd, log=True)
+    static = os.path.join(os.path.dirname(nbfile), "static")
     tarpath = os.path.join(ctx.env.SRCPATH, "3rdparty", "mathjax-1.1.0.tar.gz")
-    touchpath = os.path.join(ctx.out_dir, ".mathjax-done")
-    ctx.venv_exec("python -m IPython.external.mathjax %s && touch %s" % (tarpath, touchpath))
+    tar = tarfile.open(name=tarpath, mode="r:gz")
+    topdir = tar.firstmember.path
+    tar.extractall(static)
+    if os.path.exists(os.path.join(static, "mathjax")):
+        shutil.rmtree(os.path.join(static, "mathjax"))
+
+    ctx.cmd_and_log("mv -f %s %s && touch %s" % (
+        os.path.join(static, topdir),
+        os.path.join(static, "mathjax"),
+        os.path.join(ctx.out_dir, ".mathjax-done")))
 
 
 @conf

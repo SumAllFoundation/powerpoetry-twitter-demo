@@ -45,3 +45,5 @@ env/
 
 data/
 config.ini
+celerybeat-schedule
+settings.cfg

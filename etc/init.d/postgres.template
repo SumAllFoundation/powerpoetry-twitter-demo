@@ -1,0 +1,28 @@
+#!/bin/bash
+set -eu
+
+self="`basename \"$0\"`"
+root="`dirname \"$VIRTUAL_ENV\"`"
+
+LOGDIR="$VIRTUAL_ENV/log"
+RUNDIR="$VIRTUAL_ENV/run"
+PGDATA="$VIRTUAL_ENV/postgres/data"
+PGPORT={port}
+PGOPTS="-i -p $PGPORT"
+PGPID="$RUNDIR/postgres.pid"
+
+
+case "$1" in
+  start)
+    mkdir -p "$RUNDIR"
+    ln -sf "$PGDATA/postmaster.pid" "$PGPID"
+    ;;
+  stop)
+    rm -f "$PGPID"
+    ;;
+  *)
+    echo "Usage: $0 {{start|stop}}"
+    exit 1
+esac
+
+exec "$VIRTUAL_ENV/bin/pg_ctl" -D "$PGDATA" -o "$PGOPTS" -l "$LOGDIR/postgres" ${{1+"$@"}}

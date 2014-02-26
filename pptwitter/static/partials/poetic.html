@@ -1,0 +1,34 @@
+<div class="jumbotron">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="tweets">
+          <h4 class="text-center">Latest Tweets</h4>
+          <div ng-repeat="t in tweets">
+            <div ng-click="Data.go('poetic/' + t.id)">
+              <strong>&ldquo;</strong> ((t.text)) <strong>&rdquo;</strong><br/>
+              <i>-<a href="http://twitter.com/((t.tweeted_by))">((t.tweeted_by))</a></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-8">
+        <h2 class="score pull-left">
+          ((averageScore | number:2))%
+        </h2>
+
+        <div>
+          <br/><strong>&ldquo;</strong> ((tweet.text)) <strong>&rdquo;</strong><br/>
+          <i>-<a href="http://twitter.com/((tweet.tweeted_by))">((tweet.tweeted_by))</a></i>
+        </div>
+
+        <br/><br/>
+        <pre>
+          Poetic: ((tweet.score.poetic))%
+          Sentiment: ((tweet.score.sentiment))%
+          Language: ((tweet.score.language))%
+        </pre>
+      </div>
+    </div>
+  </div>
+</div>

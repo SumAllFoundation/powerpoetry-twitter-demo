@@ -1,0 +1,33 @@
+{% extends "admin/panels/default.html" %}
+
+{% block panel_content %}
+  {% for queue, tasks in (active_tasks or {}).iteritems() %}
+  <div class="container">
+    <h5>Active [{{ queue }}]></h5>
+    {% for task in tasks %}
+    <div>
+      <a href="#" class="time_start" data-toggle="tooltip" data-placement="top">
+        {{ task.name }}
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  <br/>
+
+  {% for queue, tasks in (scheduled_tasks or {}).iteritems() %}
+  <div class="container">
+    <h5>Scheduled [{{ queue }}]</h5>
+    {% for task in tasks %}
+    <div class="span2">
+      <a href="#" data-toggle="tooltip" data-placement="top" title="{{ task.time_start }}">
+        {{ task.name }}
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  <br/>
+
+  </script>
+{% endblock %}

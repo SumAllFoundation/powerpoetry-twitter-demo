@@ -27,6 +27,11 @@ def build(ctx):
 
     ctx.module("libpng-1.5.13", source="../bin/pkg-config", target="../bin/libpng-config")
     ctx.module("zeromq-3.2.2", source="../bin/pkg-config", target="../lib/libzmq.a")
+    ctx.module("node-v0.10.22", source="../bin/pkg-config", target="../bin/node")
+    ctx.module("bmc-daemonize-9378868", source="../bin/pkg-config", target="../sbin/daemonize")
+    ctx(rule="ln -sf ../${SRC} ${TGT}", source="../sbin/daemonize", target="../bin/daemonize")
+    ctx(rule=ctx.build_postgresql, source="../bin/pkg-config", target="../bin/postmaster")
+    ctx(rule=ctx.build_redis, source="../bin/pkg-config", target="../bin/redis-server")
 
     pkg = os.path.join(ctx.path.abspath(), "3rdparty", "site-packages")
     if sys.platform == "darwin":
@@ -70,6 +75,31 @@ def build(ctx):
             "../bin/ipython",
             "../bin/libpng-config",
             "../lib/libzmq.a",
+            "../bin/postmaster",
+            "../bin/redis-server"
         ],
         target="../.requirements-done")
     ctx.add_manual_dependency("../.requirements-done", ctx.path.find_node("requirements.txt"))
+
+    ctx(rule=ctx.venv("npm install -g uglify-js"), source="../bin/node", target="../bin/uglifyjs")
+    ctx(rule=ctx.venv("npm install -g jshint"), source="../bin/node", target="../bin/jshint")
+
+    ctx(rule=ctx.venv("npm install -g bower"), source="../bin/node", target="../bin/bower")
+    ctx(rule="ln -fs ../bower.json bower.json", source="../bin/bower", target="../bower.json")
+
+    ctx(rule=ctx.venv("npm install -g karma"), source="../bin/node", target="../bin/karma")
+    ctx(rule=ctx.venv("npm install -g karma-junit-reporter"), source="../bin/karma",
+        target="../lib/node_modules/karma-junit-reporter/package.json")
+    ctx(rule=ctx.venv("npm install -g karma-ng-scenario"), source="../bin/karma",
+        target="../lib/node_modules/karma-ng-scenario/package.json")
+    ctx(rule=ctx.venv("npm install -g karma-chrome-launcher"), source="../bin/karma",
+        target="../lib/node_modules/karma-chrome-launcher/package.json")
+    ctx(rule=ctx.venv("npm install -g karma-firefox-launcher"), source="../bin/karma",
+        target="../lib/node_modules/karma-firefox-launcher/package.json")
+    ctx(rule=ctx.venv("npm install -g karma-jasmine"), source="../bin/karma",
+        target="../lib/node_modules/karma-jasmine/package.json")
+
+    bower_install_cmd = ctx.venv("cd $VIRTUAL_ENV && bower install --save && touch .bower-done")
+    ctx(rule=bower_install_cmd, source="../bin/bower", target="../.bower-done")
+    ctx.add_manual_dependency("../.bower-done", ctx.path.find_node("../bower.json"))
+

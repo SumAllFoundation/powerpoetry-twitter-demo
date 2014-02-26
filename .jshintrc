@@ -1,0 +1,16 @@
+{
+  "undef": true,
+  "unused": false,
+  "devel": true,
+  "globalstrict": true,
+  "expr": true,
+  "jquery": true,
+  "prereq": [
+  	"pptwitter/static/js/pptwitter.js"
+  ],
+  "globals": {
+    "window": false,
+  	"angular": false,
+  	"user": false
+  }
+}

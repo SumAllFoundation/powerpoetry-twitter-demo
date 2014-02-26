@@ -1,0 +1,29 @@
+#!/bin/bash
+set -eu
+
+NAME="`basename \"$0\"`"
+LOGDIR="$VIRTUAL_ENV/log"
+ERR="$LOGDIR/$NAME-err.log"
+OUT="$LOGDIR/$NAME-out.log"
+PIDFILE="$VIRTUAL_ENV/run/$NAME.pid"
+LOCKFILE="$VIRTUAL_ENV/run/$NAME.lock"
+CONFIG="$VIRTUAL_ENV/../mtddash/tests/js/config.js"
+
+case "${{1-}}" in
+    start)
+    echo -n 1>&2 "Starting $NAME: "
+    echo -n 1>&2 `daemonize -o $OUT -e $ERR \
+        -p "$PIDFILE" -l "$LOCKFILE" -c "$VIRTUAL_ENV/.." \
+        $VIRTUAL_ENV/bin/karma start $CONFIG`
+    echo 1>&2 'done'
+    ;;
+    stop)
+    echo -n 1>&2 "Stopping $NAME: "
+    echo -n 1>&2 `cat "$PIDFILE" | xargs -n1 kill`
+    echo 1>&2 ' done'
+    ;;
+    *)
+    echo -n 1>&2 "usage: $0 start|stop"
+    exit 1
+    ;;
+esac
