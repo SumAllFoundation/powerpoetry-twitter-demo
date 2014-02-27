@@ -6,6 +6,7 @@
           <h4 class="text-center">Latest Tweets</h4>
           <div ng-repeat="t in tweets">
             <div ng-click="Data.go('poetic/' + t.id)">
+              (((t.score.language + t.score.poetic + t.score.sentiment) / 3.0))%
               <strong>&ldquo;</strong> ((t.text)) <strong>&rdquo;</strong><br/>
               <i>-<a href="http://twitter.com/((t.tweeted_by))">((t.tweeted_by))</a></i>
             </div>
