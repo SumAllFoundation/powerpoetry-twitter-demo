@@ -1,22 +1,29 @@
 <div class="jumbotron">
   <div class="container">
     <div class="row">
-      <div class="col-sm-4">
+      <div class="col-sm-5">
         <div class="tweets">
-          <h4 class="text-center">Latest Tweets</h4>
-          <div ng-repeat="t in tweets">
-            <div ng-click="Data.go('poetic/' + t.id)">
-              (((t.score.language + t.score.poetic + t.score.sentiment) / 3.0))%
+          <div class="text-center">
+            <br/>
+            <ul class="nav nav-pills">
+              <li ng-class="{active: slice == 'latest'}"><a href="#/poetic/latest/((tweet.id))">Latest</a></li>
+              <li ng-class="{active: slice == 'greatest'}"><a href="#/poetic/greatest/((tweet.id))">Greatest</a></li>
+            </ul>
+          </div>
+          <br/>
+          <div class="tweet" ng-repeat="t in tweets">
+            <div ng-click="Data.go('poetic/' + slice + '/' + t.id)">
+              <strong>((t.score))%</strong>
               <strong>&ldquo;</strong> ((t.text)) <strong>&rdquo;</strong><br/>
               <i>-<a href="http://twitter.com/((t.tweeted_by))">((t.tweeted_by))</a></i>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-sm-8">
+      <div class="col-sm-7">
         <div>
           <h2 class="score pull-left">
-            ((averageScore | number:2))%
+            ((tweet.score | number:2))%
           </h2>
 
           <div>
@@ -26,9 +33,9 @@
         </div>
 
         <pre class="breakdown">
-Poetic: ((tweet.score.poetic))%
-Sentiment: ((tweet.score.sentiment))%
-Language: ((tweet.score.language))%</pre>
+Poetic: ((tweet.poetic))%
+Sentiment: ((tweet.sentiment))%
+Language: ((tweet.language))%</pre>
       </div>
     </div>
   </div>

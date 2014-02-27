@@ -54,7 +54,10 @@ def process_page(page, config_since_id):
             text=tweet.text,
             tweet_id=tweet.id,
             tweeted_by=screen_name,
-            score=score).id
+            language=score["language"],
+            poetic=score["poetic"],
+            sentiment=score["sentiment"],
+            score=avgscore).id
 
         logger.info('%s @%s %s...: %.1f%%' % (tweet.id, screen_name, tweet.text[:20], avgscore))
         logger.info("%s: @%s Your poem scored %.1f%%" % (tweet.id, screen_name, avgscore))

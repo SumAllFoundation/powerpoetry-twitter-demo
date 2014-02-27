@@ -37,7 +37,7 @@ body {
   border-radius: 5px;
 }
 
-.tweets > div {
+.tweets > div.tweet {
   padding: 8px;
   margin-bottom: 8px;
   border: 1px solid #ccc;

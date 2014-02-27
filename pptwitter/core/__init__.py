@@ -1,5 +1,4 @@
 from peewee import BaseModel
-from redis import Redis
 
 from ..app import app, assets, celery, compress, db  # NOQA
 

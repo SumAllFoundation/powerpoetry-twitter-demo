@@ -4,12 +4,16 @@
 pptwitter.config(['$routeProvider', function($routeProvider) {
     console.log('Setting up routes...');
     $routeProvider.
-        when('/', {redirectTo: '/poetic/1'}).
-        when('/poetic/:tweet', {
+        when('/', {redirectTo: '/poetic/greatest/1'}).
+        when('/poetic/:slice/:tweet', {
             templateUrl: 'static/partials/poetic.html',
             controller: 'PoeticCtrl',
             resolve: {
-                tweets: pptwitter.apiResolver('tweet/', {ordering: '-created_at'}),
+                tweets: pptwitter.apiResolver('tweet/', function(params) {
+                    return {
+                        ordering: params.slice == 'greatest' ? '-score' : '-created_at'
+                    };
+                }),
                 tweet: pptwitter.apiResolver(function(params) {
                     return 'tweet/' + params.tweet;
                 })
@@ -52,27 +56,34 @@ pptwitter.controller('AppCtrl', function($rootScope, $scope, $timeout, $location
 });
 
 
-pptwitter.controller('PoeticCtrl', function($http, $route, $scope, $timeout, tweets, tweet, Data) {
+pptwitter.controller('PoeticCtrl', function($http, $route, $routeParams, $scope, $timeout, tweets, tweet, Data) {
     console.log('Loading PoeticCtrl...');
     $scope.Data = Data;
     $scope.tweet = tweet;
     $scope.tweets = tweets.objects;
-
-    var score = tweet.score;
-    $scope.averageScore = (score.poetic + score.sentiment + score.language) / 3.0;
+    $scope.slice = $routeParams.slice;
 
     $timeout(function() {
         console.log('Fetching more tweets');
-        var url = '/api/tweet?ordering=-created_at';
-        if ($scope.tweets.length) {
-            url += '&id__gt=' + $scope.tweets[0].id;
+        var params = {
+            ordering: $routeParams.slice == 'greatest' ? '-score' : '-created_at'
+        };
+
+        if ($scope.tweets.length && $routeParams.slice == 'latest') {
+            params.id__gt = $scope.tweets[0].id;
         }
 
         $http({
-            url: url,
-            method: 'GET'
+            url: '/api/tweet/',
+            method: 'GET',
+            params: params
         }).success(function(data, status, headers, config) {
             console.log('Received ' + data.objects.length + ' new tweets.');
+            if ($routeParams.slice == 'greatest') {
+                $scope.tweets = data.objects;
+                return;
+            }
+
             data.objects.reverse();
             angular.forEach(data.objects, function(t) {
                 $scope.tweets.unshift(t);
