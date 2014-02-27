@@ -6,7 +6,7 @@ CELERYD_NODES="w1"
 CELERYD_CHDIR="$VIRTUAL_ENV/.."
 
 # Extra arguments to celeryd
-CELERYD_OPTS="--app=pptwitter.tasks --time-limit=604800 --beat --autoreload"
+CELERYD_OPTS="--app=pptwitter.app:celery --time-limit=604800 --beat --autoreload"
 
 # %n will be replaced with the nodename.
 CELERYD_LOG_FILE="$VIRTUAL_ENV/log/celeryd@%n.log"

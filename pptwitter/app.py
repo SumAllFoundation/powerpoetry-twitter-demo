@@ -49,5 +49,5 @@ def setup_logging():
         app.logger.setLevel(logging.INFO)
 
 
-from . import routes  # NOQA
+from . import routes, tasks  # NOQA
 from .core import admin, rest, util  # NOQA
