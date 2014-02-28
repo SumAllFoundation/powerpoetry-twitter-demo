@@ -38,10 +38,10 @@ body {
 }
 
 .score {
-  padding: 20px;
-  margin-right: 20px;
+  padding: 10px 5px;
+  margin-right: 10px;
   margin-bottom: 30px;
-  height: 160px;
+  height: 200px;
   border-right: 1px solid #ccc;
 }
 
@@ -129,7 +129,7 @@ body {
   margin-bottom: 10px;
   background-color: #fff;
   max-width: 767px !important;
-  height: 165px;
+  height: 205px;
   padding-left: 10px;
 }
 
