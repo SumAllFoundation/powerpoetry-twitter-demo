@@ -4,7 +4,7 @@
 pptwitter.config(['$routeProvider', function($routeProvider) {
     console.log('Setting up routes...');
     $routeProvider.
-        when('/', {redirectTo: '/poetic/greatest/1'}).
+        when('/', {redirectTo: '/poetic/latest/1'}).
         when('/poet/:poet', {
             templateUrl: 'static/partials/poet.html',
             controller: 'PoetCtrl',
