@@ -1,42 +1,80 @@
 <div class="jumbotron">
   <div class="container">
     <div class="row">
+      <div class="col-md-12">
+        <div class="text-center">
+          <h2>Poetry Wars</h2>
+          <div>
+            Bringing back poetry<br/>
+            (By any means necessary)<br/>
+            #poetrywars<br/><br/>
+          </div>
+          <br/>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
       <div class="col-sm-5">
         <div class="tweets">
-          <div class="text-center">
-            <br/>
+          <div class="tweet-tabs text-center">
             <ul class="nav nav-pills">
               <li ng-class="{active: slice == 'latest'}"><a href="#/poetic/latest/((tweet.id))">Latest</a></li>
               <li ng-class="{active: slice == 'greatest'}"><a href="#/poetic/greatest/((tweet.id))">Greatest</a></li>
             </ul>
           </div>
-          <br/>
-          <div class="tweet" ng-repeat="t in tweets">
-            <div ng-click="Data.go('poetic/' + slice + '/' + t.id)">
-              <strong>((t.score))%</strong>
-              <strong>&ldquo;</strong> ((t.text)) <strong>&rdquo;</strong><br/>
-              <i>-<a href="http://twitter.com/((t.tweeted_by))">((t.tweeted_by))</a></i>
+          <div when-scrolled="nextPage" busy="busy" class="tweets-container">
+            <div class="tweet" ng-repeat="t in tweets">
+              <div ng-click="Data.go('poetic/' + slice + '/' + t.id)">
+                <strong>((t.score))%</strong>
+                <strong>&ldquo;</strong>((t.text))<strong>&rdquo;</strong><br/>
+                <i><a href="http://twitter.com/((t.tweeted_by))">@((t.tweeted_by))</a></i>
+              </div>
             </div>
+            <div ng-show="busy">Loading data...</div>
           </div>
         </div>
+        <br/>
       </div>
+
       <div class="col-sm-7">
-        <div>
-          <h2 class="score pull-left">
-            ((tweet.score | number:2))%
-          </h2>
+        <div class="poetic-tweet">
+          <div class="score pull-left text-center">
+            <h4>SCORE</h4>
+            <h2>
+              ((tweet.score | number:2))%
+            </h2>
+          </div>
 
           <div>
-            <br/><strong>&ldquo;</strong> ((tweet.text)) <strong>&rdquo;</strong><br/>
-            <i>-<a href="http://twitter.com/((tweet.tweeted_by))">((tweet.tweeted_by))</a></i>
+            <br/><strong>&ldquo;</strong>((tweet.text))<strong>&rdquo;</strong><br/>
+            <i><a href="http://twitter.com/((tweet.tweeted_by))">@((tweet.tweeted_by))</a></i>
+            (<a href="#/poet/((tweet.tweeted_by))">more by this poet</a>)
           </div>
         </div>
 
-        <pre class="breakdown">
-Poetic: ((tweet.poetic))%
-Sentiment: ((tweet.sentiment))%
-Language: ((tweet.language))%</pre>
+        <div class="breakdown">
+          <div class="pull-left">Sentiment:&nbsp;</div>
+          <div class="progress-bar-yellow" progressbar max="100" value="((tweet.sentiment))">
+            <span>((tweet.sentiment))%</span>
+          </div>
+
+          <div class="pull-left">Language:&nbsp;</div>
+          <div class="progress-bar-grey" progressbar max="100" value="((tweet.language))">
+            <span>((tweet.language))%</span>
+          </div>
+
+          <div class="pull-left">Poetic:&nbsp;</div>
+          <div class="progress-bar-red" progressbar max="100" value="((tweet.poetic))">
+            <span>((tweet.poetic))%</span>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <a href="http://www.powerpoetry.org/poetrywars">Scoring Strategy</a>
+        </div>
       </div>
+
     </div>
   </div>
 </div>

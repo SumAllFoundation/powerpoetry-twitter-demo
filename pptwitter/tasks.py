@@ -23,7 +23,7 @@ ranker = PercentilePoetryRanker(
 
 
 @periodic_task(run_every=crontab(minute="*/1"))
-def process_poems():
+def poll_twitter():
     logger.info("Processing poems...")
     q = app.config.get("QUERY")
     count = app.config.get("COUNT")
@@ -38,35 +38,37 @@ def process_poems():
         logger.info("Since ID: %s" % kwargs["since_id"])
 
     for page in Cursor(api.search, **kwargs).pages():
-        process_page(page, config_since_id)
+        tweets = list(page)
+        logger.info("Received %d tweets..." % len(tweets))
+
+        config_since_id.value = tweets[0].id
         config_since_id.save()
 
+        scores = ranker.rank(list(t.text for t in tweets))
+        for tweet, score in zip(tweets, scores):
+            if not tweet.retweeted:
+                process_tweet(tweet, score)
 
-def process_page(page, config_since_id):
-    tweets = list(page)
-    logger.info("Received %d tweets..." % len(tweets))
-    scores = ranker.rank(list(t.text for t in tweets))
-    for tweet, score in zip(tweets, scores):
-        config_since_id.value = tweet.id
-        avgscore = sum(score.values()) / len(score)
-        screen_name = tweet.user.screen_name
-        local_tweet_id = Tweet.create(
-            text=tweet.text,
-            tweet_id=tweet.id,
-            tweeted_by=screen_name,
-            language=score["language"],
-            poetic=score["poetic"],
-            sentiment=score["sentiment"],
-            score=avgscore).id
 
-        logger.info('%s @%s %s...: %.1f%%' % (tweet.id, screen_name, tweet.text[:20], avgscore))
-        logger.info("%s: @%s Your poem scored %.1f%%" % (tweet.id, screen_name, avgscore))
-        config_since_id.value = tweet.id
-        if app.config.get("TWITTER", "update_status"):
-            link = "%s/?route=poetic/%s" % (app.config.get("DOMAIN"), local_tweet_id)
-            message_tmpl = "@%s Your poem scored %.1f%%. For a detailed explanation see: %s"
-            status = message_tmpl % (screen_name, avgscore, link)
-            try:
-                api.update_status(status, tweet.id, wrap_links="true")
-            except TweepError:
-                logger.info("Unable to update twitter status.", exc_info=True)
+def process_tweet(tweet, score):
+    avgscore = sum(score.values()) / len(score)
+    screen_name = tweet.user.screen_name
+    local_tweet_id = Tweet.create(
+        text=tweet.text,
+        tweet_id=tweet.id,
+        tweeted_by=screen_name,
+        language=score["language"],
+        poetic=score["poetic"],
+        sentiment=score["sentiment"],
+        score=avgscore).id
+
+    logger.info('%s @%s %s...: %.1f%%' % (tweet.id, screen_name, tweet.text[:20], avgscore))
+    logger.info("%s: @%s Your poem scored %.1f%%" % (tweet.id, screen_name, avgscore))
+    if app.config.get("TWITTER", "update_status"):
+        link = "%s/?route=poetic/%s" % (app.config.get("DOMAIN"), local_tweet_id)
+        message_tmpl = "@%s Your poem scored %.1f%%. For a detailed explanation see: %s"
+        status = message_tmpl % (screen_name, avgscore, link)
+        try:
+            api.update_status(status, tweet.id, wrap_links="true")
+        except TweepError:
+            logger.info("Unable to update twitter status.", exc_info=True)

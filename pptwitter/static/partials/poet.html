@@ -1,0 +1,49 @@
+<div class="jumbotron">
+  <!-- <a  class="pull-right" href="#/">back</a> -->
+  <div class="container">
+    <h3 class="text-center">
+      <a href="http://twitter.com/(( poet ))">@(( poet ))</a>
+    </h3>
+    <br/>
+  </div>
+
+  <div class="container poet-tweet" ng-repeat="tweet in tweets">
+    <div class="row">
+      <div class="col-xs-12">
+        <br/><strong>&ldquo;</strong>((tweet.text))<strong>&rdquo;</strong><br/>
+      </div>
+    </div>
+    <hr/>
+
+    <div class="row">
+      <div class="col-xs-4">
+        <div class="poet-score text-center">
+          <h4>SCORE</h4>
+          <h2>
+            ((tweet.score | number:2))%
+          </h2>
+        </div>
+      </div>
+
+      <div class="col-xs-8">
+        <div class="breakdown">
+          <div class="pull-left">Sentiment:&nbsp;</div>
+          <div class="progress-bar-yellow" progressbar max="100" value="((tweet.sentiment))">
+            <span>((tweet.sentiment))%</span>
+          </div>
+
+          <div class="pull-left">Language:&nbsp;</div>
+          <div class="progress-bar-grey" progressbar max="100" value="((tweet.language))">
+            <span>((tweet.language))%</span>
+          </div>
+
+          <div class="pull-left">Poetic:&nbsp;</div>
+          <div class="progress-bar-red" progressbar max="100" value="((tweet.poetic))">
+            <span>((tweet.poetic))%</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

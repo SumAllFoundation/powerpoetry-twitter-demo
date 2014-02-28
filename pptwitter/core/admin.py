@@ -27,7 +27,7 @@ class ConfigAdmin(ModelAdmin):
 
 class TweetAdmin(ModelAdmin):
 
-    columns = ("created_at", "tweeted_by", "text", "score")
+    columns = ("id", "created_at", "tweeted_by", "text", "score")
 
 
 class UserAdmin(ModelAdmin):

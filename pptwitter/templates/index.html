@@ -3,7 +3,9 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Power Poetry - How poetic is your Tweet?</title>
-    <!--[if IE]><script src="bower_components/html5shiv/dist/html5shiv.js"></script><![endif]-->
+    <!--[if IE]><script src="{{ url_for("static", filename="components/html5shiv/dist/html5shiv.js") }}"></script><![endif]-->
+    <!--[if IE]><script src="{{ url_for("static", filename="components/angular-ui-chart/build/angular-ui-ieshiv.min.js") }}"></script><![endif]-->
+    <!--[if lt IE 9]><script src="{{ url_for("static", filename="components/jqplot/excanvas.js") }}"></script><![endif]-->
 
     <!-- Source mapped -->
     <script type="text/javascript" src="{{ url_for("static",
@@ -52,8 +54,8 @@
         "components/select2/select2.min.js",
         "components/angular-route/angular-route.min.js",
         "components/angular-ui/build/angular-ui.min.js",
-        "components/angular-bootstrap/ui-bootstrap-tpls.min.js",
-        "components/angular-ui-date/src/date.js" %}
+        "components/angular-ui-date/src/date.js",
+        "components/angular-bootstrap/ui-bootstrap-tpls.min.js" %}
       <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
 
@@ -70,7 +72,11 @@
     <link rel="stylesheet" href="{{ url_for("static",
         filename="components/jquery-ui/themes/redmond/jquery-ui.min.css") }}"/>
     <link rel="stylesheet" href="{{ url_for("static",
+        filename="components/angular-ui/build/angular-ui.min.css") }}"/>
+    <link rel="stylesheet" href="{{ url_for("static",
         filename="components/bootstrap/dist/css/bootstrap.min.css") }}"/>
+    <link rel="stylesheet" href="{{ url_for("static",
+        filename="components/jqplot/jquery.jqplot.min.css") }}"/>
 
     {% assets output="gen/pptwitter-css.css",
         "css/theme.css" %}
@@ -87,10 +93,18 @@
   <body>
     <div ng-controller="AppCtrl">
       <div class="title">
-        <a href="http://www.powerpoetry.org" title="powerpoetry.org">
+        <a href="#/" title="powerpoetry.org">
           <img src="{{ url_for("static", filename="img/powerpoetry_logo_0.jpg") }}"/>
         </a>
+
+        <div class="top-menu">
+          <span>
+            <a href="http://powerpoetry.org/about">About</a>&nbsp;&nbsp;|&nbsp;
+          </span>
+          <iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com%2Fpowerpoetry%2F&amp;width&amp;layout=button_count&amp;action=like&amp;show_faces=true&amp;share=true&amp;height=21&amp;width=50" scrolling="no" frameborder="0" style="border:none; overflow:hidden; height:21px; width:140px;" allowTransparency="true"></iframe>
+        </div>
       </div>
+
       <div class="spinner" ng-show="Data.loading">
         <img src="{{ url_for("static", filename="img/ajax-loader.gif") }}"/>
       </div>
@@ -114,7 +128,6 @@
         <li><a href="http://powerpoetry.org/blog">Blog</a></li>
         <li><a href="http://powerpoetry.org/about/who-we-are">Team</a></li>
         <li><a href="http://powerpoetry.org/partners">Partners</a></li>
-        <li><a href="http://powerpoetry.org/privacy">Privacy</a></li>
         <li><a href="http://powerpoetry.org/help">Help</a></li>
         <li><a href="http://powerpoetry.org/jobs">Jobs</a></li>
         <li><a href="http://powerpoetry.org/contact">Contact</a></li>
