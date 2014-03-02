@@ -46,7 +46,7 @@ def poll_twitter():
 
         scores = ranker.rank(list(t.text for t in tweets))
         for tweet, score in zip(tweets, scores):
-            if not tweet.retweeted:
+            if not tweet.retweeted and not tweet.text.startswith("RT "):
                 process_tweet(tweet, score)
 
 
