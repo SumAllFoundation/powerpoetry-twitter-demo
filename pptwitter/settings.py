@@ -19,6 +19,11 @@ DATABASE = {
     "password": "root"
 }
 
+REDIS = {
+    "host": "localhost",
+    "port": 6003
+}
+
 TWITTER = {}
 COCA_PATH = "data/coca.json"
 INQUIRER_PATH = "data/inquirer.json"

@@ -14,18 +14,35 @@ pptwitter.config(['$routeProvider', function($routeProvider) {
                         ordering: '-score',
                         tweeted_by: params.poet
                     };
-                })
+                }),
+                score: pptwitter.apiResolver(function(params) {
+                    return 'tweet/score/' + params.poet;
+                }, {})
             }
         }).
         when('/poetic/:slice/:tweet', {
             templateUrl: 'static/partials/poetic.html',
             controller: 'PoeticCtrl',
             resolve: {
-                tweets: pptwitter.apiResolver('tweet/', function(params) {
-                    return {
-                        ordering: params.slice == 'greatest' ? '-score' : '-created_at'
-                    };
-                }),
+                data: pptwitter.apiResolver(
+                    function(params) {
+                        return params.slice == 'leaders' ?
+                            'tweet/score/' :
+                            'tweet/';
+                    },
+                    function(params) {
+                        if (params.slice == 'leaders') {
+                            return {};
+                        }
+                        if (params.slice == 'greatest') {
+                            return {ordering: '-score'};
+
+                        }
+                        if (params.slice == 'latest') {
+                            return {ordering: '-created_at'};
+                        }
+                    }
+                ),
                 tweet: pptwitter.apiResolver(function(params) {
                     return 'tweet/' + params.tweet;
                 })
@@ -68,15 +85,36 @@ pptwitter.controller('AppCtrl', function($rootScope, $scope, $timeout, $location
 });
 
 
-pptwitter.controller('PoeticCtrl', function($http, $route, $routeParams, $scope, $timeout, tweets, tweet, Data) {
+pptwitter.controller('PoeticCtrl', function($http, $route, $routeParams, $scope, $timeout, tweet, data, Data) {
     console.log('Loading PoeticCtrl...');
     $scope.Data = Data;
     $scope.tweet = tweet;
-    $scope.tweets = tweets.objects;
+
+    if ($routeParams.slice == 'leaders') {
+        $scope.users = data.objects;
+    } else {
+        $scope.tweets = data.objects;
+    }
+
     $scope.slice = $routeParams.slice;
     $scope.busy = false;
+    $scope.badges = angular.copy(pptwitter.badges);
 
-    var nextUrl = tweets.meta.next;
+    $scope.selectBadge = function(badge) {
+        if ($scope.selectedBadge) {
+            $scope.selectedBadge.selected = false;
+        }
+        $scope.selectedBadge = badge;
+        badge.selected = true;
+    };
+
+    $scope.selectBadge($scope.badges[0]);
+
+    if ($routeParams.slice == 'leaders') {
+        return;
+    }
+
+    var nextUrl = data.meta.next;
     $scope.nextPage = function() {
         console.log('Requesting tweets...');
         $scope.busy = true;
@@ -105,7 +143,7 @@ pptwitter.controller('PoeticCtrl', function($http, $route, $routeParams, $scope,
         });
     };
 
-    if ($routeParams.slice == 'greatest') {
+    if ($routeParams.slice != 'latest') {
         return;
     }
 
@@ -146,9 +184,25 @@ pptwitter.controller('PoeticCtrl', function($http, $route, $routeParams, $scope,
 
 
 
-pptwitter.controller('PoetCtrl', function($http, $route, $routeParams, $scope, tweets, Data) {
+pptwitter.controller('PoetCtrl', function($http, $route, $routeParams, $scope, tweets, score, Data) {
     console.log('Loading PoeticCtrl...');
     $scope.Data = Data;
     $scope.tweets = tweets.objects;
     $scope.poet = $routeParams.poet;
+    $scope.score = score;
+
+    angular.forEach(pptwitter.badges, function(obj, index) {
+        obj.index = index;
+        if (score.score >= obj.threshold) {
+            $scope.badge = obj;
+        }
+    });
+
+    $scope.toNextLevel = 0;
+    if ($scope.badge.index + 1 < pptwitter.badges.length) {
+        $scope.nextBadge = pptwitter.badges[$scope.badge.index + 1];
+        $scope.toNextLevel = $scope.nextBadge.threshold - $scope.score.score;
+        $scope.maxProgress = $scope.nextBadge.threshold - $scope.badge.threshold;
+        $scope.progress = $scope.score.score - $scope.badge.threshold;
+    }
 });

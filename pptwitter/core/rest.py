@@ -1,15 +1,18 @@
 import functools
 import json
+import time
 
-from flask import abort, g, request, Response
-from flask_peewee.rest import RestAPI, RestrictOwnerResource, RestResource, UserAuthentication
+from flask import abort, g, jsonify, request, Response
+from flask_peewee.rest import RestAPI, RestrictOwnerResource, RestResource
+from flask_peewee.rest import Authentication, UserAuthentication
 from flask_peewee.utils import check_password, make_password
+from peewee import JOIN_LEFT_OUTER, fn
 from werkzeug import MultiDict
 
 from ..app import app
 from .auth import auth
-from .model import User, Tweet
-from .util import transaction
+from .model import User, Tweet, Rating
+from .util import transaction, wilson_confidence_column
 
 
 class ApiException(Exception):
@@ -21,6 +24,12 @@ class ApiException(Exception):
 
 class BadRequestException(Exception):
     pass
+
+
+class OpenAuthentication(Authentication):
+
+    def __init__(self):
+        super(OpenAuthentication, self).__init__(['PUT', 'DELETE'])
 
 
 class RestAuthentication(UserAuthentication):
@@ -122,11 +131,141 @@ class UserResource(RestResource):
 
 class TweetResource(RestResource):
 
-    pass
+    def get_urls(self):
+        return super(TweetResource, self).get_urls() + (
+            ('/score/', self.top_scores),
+            ('/score/<screen_name>/', self.user_score),
+        )
+
+    def get_query(self):
+        return Tweet.select(Tweet, Rating).join(Rating, JOIN_LEFT_OUTER, on=(
+            (Tweet.id == Rating.tweet) & (Rating.remote_addr == request.remote_addr)
+        ).alias("user_rating"))
+
+    def prepare_data(self, obj, data):
+        data["user_rating"] = obj.user_rating.rating
+        data["created_at"] = time.mktime(obj.created_at.timetuple()) * 1000
+        return data
+
+    def top_scores(self):
+        score_col = fn.Sum(Tweet.score)
+        count_col = fn.Count(Tweet.id)
+        confidence_col = wilson_confidence_column(score_col, count_col, 100, 0.95)
+        query = Tweet.select(
+            Tweet.tweeted_by,
+            score_col.alias('score'),
+            count_col.alias('count'),
+            confidence_col.alias('confidence')
+        ).group_by(Tweet.tweeted_by).order_by(confidence_col.desc())
+
+        return jsonify({
+            "meta": {},
+            "objects": [{
+                "screen_name": row.tweeted_by,
+                "score": row.score,
+                "average": row.score / row.count,
+                "confidence": row.confidence,
+                "count": row.count
+            } for row in query]
+        })
+
+    def user_score(self, screen_name):
+        row = self.user_score_query(screen_name).get()
+        return jsonify({
+            "screen_name": row.tweeted_by,
+            "score": row.score
+        })
+
+    def user_score_query(self, screen_name):
+        return Tweet.select(
+            Tweet.tweeted_by,
+            fn.Count(Tweet.id).alias('count'),
+            fn.Sum(Tweet.score).alias('score')
+        ).where(
+            Tweet.tweeted_by == screen_name
+        ).group_by(Tweet.tweeted_by)
+
+
+class RatingResource(RestResource):
+
+    include_resources = {
+        "tweet": TweetResource
+    }
+
+    def get_urls(self):
+        return super(RatingResource, self).get_urls() + (
+            ("/tweet/", self.top_tweets),
+            ("/user/", self.top_users),
+        )
+
+    def create_(self, data):
+        data["remote_addr"] = request.remote_addr
+        rating = super(RatingResource, self).create_(data)
+        rating.tweet.rating = (rating.tweet.rating * rating.tweet.rate_count) + rating.rating
+        rating.tweet.rate_count += 1
+        rating.tweet.rating /= rating.tweet.rate_count
+        rating.tweet.save()
+        return rating
+
+    def edit_(self, obj, data):
+        data["remote_addr"] = request.remote_addr
+        return super(RatingResource, self).edit_(data)
+
+    def top_tweets(self):
+        score_col = fn.Sum(Rating.rating)
+        count_col = fn.Count(Rating.id)
+        confidence_col = wilson_confidence_column(score_col, count_col, 3, 0.95)
+
+        query = Rating.select(
+            Tweet,
+            score_col.alias('rating'),
+            count_col.alias('count'),
+            confidence_col.alias('confidence')
+        ).join(Tweet).group_by(Tweet.id).order_by(confidence_col.desc())
+
+        return jsonify({
+            "meta": {},
+            "objects": [{
+                "id": row.id,
+                "text": row.text,
+                "score": row.score,
+                "tweeted_by": row.tweeted_by,
+                "created_at": row.created_at,
+                "rating": row.rating,
+                "average": row.rating / row.count,
+                "confidence": row.confidence,
+                "count": row.count
+            } for row in query]
+        })
+
+    def top_users(self):
+        score_col = fn.Sum(Rating.rating)
+        count_col = fn.Count(Rating.id)
+        confidence_col = wilson_confidence_column(score_col, count_col, 3, 0.95)
+        query = Rating.select(
+            Tweet.tweeted_by,
+            score_col.alias('rating'),
+            count_col.alias('count'),
+            confidence_col.alias('confidence')
+        ).join(Tweet).group_by(Tweet.tweeted_by).order_by(confidence_col.desc())
+
+        return jsonify({
+            "meta": {},
+            "objects": [{
+                "screen_name": row.tweeted_by,
+                "rating": row.rating,
+                "average": row.rating / row.count,
+                "confidence": row.confidence,
+                "count": row.count
+            } for row in query]
+        })
 
 
 api = RestAPI(app)
+open_auth = OpenAuthentication()
 user_auth = RestAuthentication(auth)
-api.register(User, UserResource, auth=user_auth)
+
 api.register(Tweet, TweetResource)
+api.register(Rating, RatingResource, auth=open_auth)
+api.register(User, UserResource, auth=user_auth)
 api.setup()

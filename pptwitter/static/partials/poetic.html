@@ -1,34 +1,114 @@
 <div class="jumbotron">
+  <br/>
   <div class="container">
+
     <div class="row">
-      <div class="col-md-12">
-        <div class="text-center">
-          <h2>Poetry Wars</h2>
-          <div>
-            Bringing back poetry<br/>
-            (By any means necessary)<br/>
-            #poetrywars<br/><br/>
+      <div class="col-sm-4">
+
+        <div class="text-center" >
+          <h4>RULES</h4>
+          <div class="rules">
+            <ol>
+              <li>
+                <a href="https://twitter.com/intent/tweet?button_hashtag=poetrywars" class="twitter-hashtag-button" data-related="powerpoetry" data-dnt="true">Tweet #poetrywars</a>
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+              </li>
+              <li>Get score from <b>@powerpoetry</b>.</li>
+              <li>Measure up and <b>battle!</b></li>
+            </ol>
           </div>
           <br/>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-sm-5">
+        <div class="text-center">
+          <h4>SPOILS</h4>
+          <div class="spoils">
+            <ul class="list-inline">
+              <li ng-repeat="b in badges">
+                <a ng-class="{selected: b.selected}" ng-click="selectBadge(b)">
+                  <img ng-src="/static/img/badge-0(($index + 1)).png"/>
+                </a>
+              </li>
+            </ul>
+
+            <div class="badge-info text-center">
+              <b>((selectedBadge.badge))</b><br/>
+              ((selectedBadge.description))
+            </div>
+          </div>
+          <br/>
+        </div>
+
+      </div>
+
+      <div class="col-sm-4">
+
+        <div class="text-center main-tweet-text">
+          <h4>TWEET</h4>
+          <strong>&ldquo;</strong>((tweet.text))<strong>&rdquo;</strong><br/>
+          <i><a href="#/poet/((tweet.tweeted_by))">@((tweet.tweeted_by))</a></i>
+          <div class="margin-center" raty tweet="tweet"></div>
+          <br/><br/>
+        </div>
+
+        <div class="score text-center">
+          <h4>SCORE</h4>
+          <h3>
+            ((tweet.score | number:2))%
+          </h3>
+        </div>
+        <br/>
+
+        <div class="text-center">
+          <div ng-include="'breakdown.html'"></div>
+          <a class="hidden-xs" href="http://www.powerpoetry.org/poetrywars">Scoring Strategy</a>
+          <br/><br/>
+        </div>
+      </div>
+
+      <div class="col-sm-4">
         <div class="tweets">
           <div class="tweet-tabs text-center">
             <ul class="nav nav-pills">
               <li ng-class="{active: slice == 'latest'}"><a href="#/poetic/latest/((tweet.id))">Latest</a></li>
               <li ng-class="{active: slice == 'greatest'}"><a href="#/poetic/greatest/((tweet.id))">Greatest</a></li>
+              <li ng-class="{active: slice == 'leaders'}"><a href="#/poetic/leaders/((tweet.id))">Leaders</a></li>
             </ul>
           </div>
-          <div when-scrolled="nextPage" busy="busy" class="tweets-container">
+          <div class="users" ng-if="users">
+            <div class="user" ng-repeat="u in users">
+              <div class="pull-left twitter-pic">
+                <div class="twitter-pic">
+                  <a href="http://www.twitter.com/((u.screen_name))">
+                    <img ng-src="/twitter-pic/((u.screen_name))"/>
+                  </a>
+                </div>
+              </div>
+              <img class="badge-small" ng-src="/badge/((u.screen_name))"/>
+              <i><a href="#/poet/((u.screen_name))">@((u.screen_name))</a></i><br/>
+              Total: ((u.score))  Avg: ((u.average | number:2)) Tweets: ((u.count))<br/>
+            </div>
+          </div>
+
+          <div ng-if="tweets" when-scrolled="nextPage" busy="busy" class="tweets-container">
             <div class="tweet" ng-repeat="t in tweets">
               <div ng-click="Data.go('poetic/' + slice + '/' + t.id)">
-                <strong>((t.score))%</strong>
-                <strong>&ldquo;</strong>((t.text))<strong>&rdquo;</strong><br/>
-                <i><a href="http://twitter.com/((t.tweeted_by))">@((t.tweeted_by))</a></i>
+                <div class="pull-left twitter-pic">
+                  <a href="http://www.twitter.com/((t.tweeted_by))">
+                    <img ng-src="/twitter-pic/((t.tweeted_by))"/>
+                  </a>
+                </div>
+                <img class="badge-small" ng-src="/badge/((t.tweeted_by))"/>
+                <i><a href="#/poet/((t.tweeted_by))">@((t.tweeted_by))</a></i>
+                <div class="pull-right" raty tweet="t"></div><br/>
+
+                <div class="tweet-text">
+                  <strong>((t.score))%</strong>
+                  <strong>&ldquo;</strong>((t.text))<strong>&rdquo;</strong>
+                  <div class="text-left" style="color: #aaa; margin-top: 5px; margin-bottom: -5px;">
+                    <small>((tweet.created_at | date:'MMM dd, yyyy @ h:mm a'))</small>
+                  </div>
+                </div>
               </div>
             </div>
             <div ng-show="busy">Loading data...</div>
@@ -36,46 +116,7 @@
         </div>
         <br/>
       </div>
-
-      <div class="col-sm-7">
-        <div class="poetic-tweet">
-          <div class="score pull-left text-center">
-            <h4>SCORE</h4>
-            <h2>
-              ((tweet.score | number:2))%
-            </h2>
-          </div>
-
-          <div>
-            <br/><strong>&ldquo;</strong>((tweet.text))<strong>&rdquo;</strong><br/>
-            <i><a href="http://twitter.com/((tweet.tweeted_by))">@((tweet.tweeted_by))</a></i>
-            <br class="visible-xs"/>
-            (<a href="#/poet/((tweet.tweeted_by))">more by this poet</a>)
-          </div>
-        </div>
-
-        <div class="breakdown">
-          <div class="pull-left">Sentiment:&nbsp;</div>
-          <div class="progress-bar-yellow" progressbar max="100" value="((tweet.sentiment))">
-            <span>((tweet.sentiment))%</span>
-          </div>
-
-          <div class="pull-left">Language:&nbsp;</div>
-          <div class="progress-bar-grey" progressbar max="100" value="((tweet.language))">
-            <span>((tweet.language))%</span>
-          </div>
-
-          <div class="pull-left">Poetic:&nbsp;</div>
-          <div class="progress-bar-red" progressbar max="100" value="((tweet.poetic))">
-            <span>((tweet.poetic))%</span>
-          </div>
-        </div>
-
-        <div class="text-center">
-          <a href="http://www.powerpoetry.org/poetrywars">Scoring Strategy</a>
-        </div>
-      </div>
-
     </div>
+
   </div>
 </div>

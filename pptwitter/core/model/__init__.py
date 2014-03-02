@@ -6,7 +6,7 @@ from .. import db
 
 from .config import Config  # NOQA
 from .schema import Schema  # NOQA
-from .tweet import Tweet  # NOQA
+from .tweet import Tweet, Rating  # NOQA
 from .user import User  # NOQA
 
 

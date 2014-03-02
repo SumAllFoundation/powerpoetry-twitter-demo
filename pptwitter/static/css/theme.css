@@ -6,23 +6,98 @@ body {
   background-color: #000;
 }
 
-.title {
-  position: relative;
+h4 {
+  font-family:'Conv_Kankin',Sans-Serif;
 }
 
-.title img {
-  width: 100px;
+.margin-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.kankin {
+  font-family:'Conv_Kankin',Sans-Serif;
+}
+
+.banner a {
+  font-size: 3em;
+  color: #000;
+}
+
+.rules {
+  width: 245px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+  position: relative;
+  left: -5px;
+  height: 132px;
+}
+
+.rules b {
+  font-family:'Conv_Kankin',Sans-Serif;
+}
+
+.spoils {
+  margin-bottom: 20px;
+}
+
+.spoils img {
+  width: 80px;
+}
+
+.spoils .selected img {
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.hint {
+  font-family:'Conv_Sansus Webissimo-Regular',Sans-Serif;
+  width:800px;
+  margin:10px auto;
+  text-align:left;
+  border:1px;
+  padding:10px;
+}
+
+.title {
+  position: relative;
+  height: 180px;
+}
+
+.title > .banner {
+  background-image: url('/static/img/Digital-Camo.jpg');
+  width: 100%;
+  height: 110px;
+}
+
+.title a:hover {
+  text-decoration: none;
+}
+
+.subtitle {
+  position: relative;
+  top: -10px;
+  color: #fff;
+}
+
+.top-menu-left {
+  position: absolute;
+  left: 40px;
+  bottom: 10px;
+  z-index: 2;
+}
+
+.top-menu-left span {
+  position:relative;
+  top: -8px;
 }
 
 .top-menu {
   position: absolute;
-  right: 0px;
-  top: 10px;
-}
-
-.top-menu span {
-  position:relative;
-  top: -5px;
+  right: 20px;
+  bottom: 12px;
+  z-index: 2;
 }
 
 .progress-bar-yellow .progress-bar {
@@ -30,7 +105,7 @@ body {
 }
 
 .progress-bar-grey .progress-bar {
- background-color: #bcbaba;
+ /*background-color: #bcbaba;*/
 }
 
 .progress-bar-red .progress-bar {
@@ -38,20 +113,23 @@ body {
 }
 
 .score {
-  padding: 10px 5px;
+/*  padding: 10px 5px;
   margin-right: 10px;
   margin-bottom: 30px;
   height: 200px;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #ccc;*/
 }
 
-.score h2 {
+.score h3 {
+  margin-top: -7px;
   color: orange;
+  font-size: 3em;
+  text-shadow: 2px 2px #ddd;
 }
 
 .breakdown {
   clear: both;
-  margin-bottom: 40px;
+  margin-bottom: 10px;
 }
 
 .breakdown span {
@@ -87,10 +165,25 @@ body {
   border-radius: 5px;
 }
 
+.twitter-pic {
+  margin-bottom: 10px;
+  margin-right: 10px;
+  width: 48px;
+  clear: left;
+}
+
 .tweets .tweets-container {
   padding: 5px;
   max-height: 400px;
   overflow-y: auto;
+}
+
+.tweets .tweet-score {
+}
+
+.tweets .tweet-text {
+  margin-left: 3px;
+  margin-top: 0;
 }
 
 .tweet-tabs {
@@ -101,11 +194,27 @@ body {
 .tweets-container > div.tweet {
   padding: 8px;
   margin-bottom: 8px;
-  border: 1px solid #ccc;
-  background-color: lightblue;
+  border: 1px solid lightblue;
+  background-color: #efefef;
   border-radius: 5px;
   box-shadow: 3px 3px 5px #888888;
   cursor: pointer;
+}
+
+.users {
+  padding: 5px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.user {
+  height: 70px;
+  padding: 5px;
+  border: 1px solid lightblue;
+  background-color: #efefef;
+  border-radius: 5px;
+  box-shadow: 3px 3px 5px #888888;
+  margin-bottom: 10px;
 }
 
 .poet-score {
@@ -119,7 +228,7 @@ body {
   border: 1px solid #ccc;
   border-radius: 5px;
   margin-bottom: 10px;
-  background-color: #fff;
+  background-color: #fafafa;
   max-width: 767px !important;
 }
 
@@ -129,8 +238,17 @@ body {
   margin-bottom: 10px;
   background-color: #fff;
   max-width: 767px !important;
-  height: 205px;
+  height: 245px;
   padding-left: 10px;
+}
+
+.main-tweet-text {
+  height: 180px;
+}
+
+.badge-small {
+  width: 20px;
+  margin-top: -4px;
 }
 
 input.ng-invalid.ng-dirty {
@@ -189,44 +307,21 @@ input.ng-valid.ng-dirty {
 
 .jumbotron {
   padding-top: 0 !important;
+  background-color: #fff;
 }
 
-.panel-image-container {
-  height: 140px;
-  width: 1%;
-  position: relative;
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
+.poet-progress {
+  width: 300px;
 }
 
-.panel-image-container img {
-  position: absolute;
-  bottom: -40px;
-  left: -195px;
+.poet-progress small {
+  color: black;
+  white-space: nowrap;
+  padding: 0 90px;
 }
 
-.profile-buttons {
-  border-top: 1px solid #ccc;
-  background-color: #efefef;
-  padding: 60px;
-}
-
-.subscribe-nav {
-  text-align: center;
-  margin: 0 auto 20px auto;
-  color: #616161;
-}
-
-.subscribe-nav h5 {
-  font-size: 1.8rem;
-  display: inline-block;
-  color: #bbb;
-  margin: 0 8px;
-}
-
-.subscribe-nav h5.done {
-  color: #a7c280;
+.poet-progress .progress-bar {
+  background-color: lightgreen
 }
 
 .dashed {
@@ -236,23 +331,22 @@ input.ng-valid.ng-dirty {
   border-bottom: 0 solid #fff;
 }
 
-.summary-row {
-
+.rating {
+  color: #F2BB66;
+  cursor: pointer;
 }
 
-.summary-label {
-  display: inline-block;
-  text-align: right;
-  width: 100px;
-  margin-right: 30px;
+.rating-hover {
+  color: #FFD801;
 }
 
-.summary-value {
-  font-size: 1.2em;
-  font-weight: bold;
-  display: inline-block;
-  text-align: left;
-  width: 100px;
+.rated {
+  color: #FFD801;
+  cursor: default;
+}
+
+.poet-title a:hover {
+  text-decoration: none;
 }
 
 @media(min-width: 768px) {
@@ -263,11 +357,29 @@ input.ng-valid.ng-dirty {
 }
 
 @media(max-width: 768px) {
+  .banner a {
+    position: relative;
+    top: 20px;
+    font-size: 1.5em;
+    color: #000;
+  }
+
   .tweets {
     margin-bottom: 20px;
   }
 
   .tweets-container {
-    height: 200px;
+    height: 300px;
   }
+
+  .rules {
+    width: 285px;
+    padding-left: 40px;
+    height: 80px;
+  }
+
+  .spoils img {
+    width: 40px;
+  }
+
 }

@@ -1,16 +1,32 @@
 <div class="jumbotron">
   <!-- <a  class="pull-right" href="#/">back</a> -->
-  <div class="container">
-    <h3 class="text-center">
-      <a href="http://twitter.com/(( poet ))">@(( poet ))</a>
-    </h3>
-    <br/>
+  <div class="container text-center">
+    <h2 class="poet-title">
+      <a href="http://twitter.com/((poet))">
+        @((poet))
+      </a>
+    </h2>
+    <h5 class="kankin">
+      <img class="badge-small" ng-src="/static/img/badge-0((badge.index + 1)).png"/> ((badge.badge))
+    </h5>
+    <img style="border: 1px solid #ccc; border-radius: 2px;" ng-src="/twitter-pic/((poet))"/>
+    <h5>
+      ((score.score)) points
+    </h5>
+    <div progressbar animate="true" value="progress" max="maxProgress" class="poet-progress margin-center progress-striped active">
+      <small class="text-center">
+        <strong>((toNextLevel)) points to next level</strong>
+      </small>
+    </div>
   </div>
 
   <div class="container poet-tweet" ng-repeat="tweet in tweets">
     <div class="row">
       <div class="col-xs-12">
-        <br/><strong>&ldquo;</strong>((tweet.text))<strong>&rdquo;</strong><br/>
+        <small><br/>((tweet.created_at | date:'MMM dd, yyyy @ h:mm a'))</small>
+        <br/>
+        <div class="pull-left" raty="rate" tweet="tweet"></div>
+        &nbsp;<strong>&ldquo;</strong>((tweet.text))<strong>&rdquo;</strong><br/>
       </div>
     </div>
     <hr/>
@@ -26,22 +42,7 @@
       </div>
 
       <div class="col-xs-8">
-        <div class="breakdown">
-          <div class="pull-left">Sentiment:&nbsp;</div>
-          <div class="progress-bar-yellow" progressbar max="100" value="((tweet.sentiment))">
-            <span>((tweet.sentiment))%</span>
-          </div>
-
-          <div class="pull-left">Language:&nbsp;</div>
-          <div class="progress-bar-grey" progressbar max="100" value="((tweet.language))">
-            <span>((tweet.language))%</span>
-          </div>
-
-          <div class="pull-left">Poetic:&nbsp;</div>
-          <div class="progress-bar-red" progressbar max="100" value="((tweet.poetic))">
-            <span>((tweet.poetic))%</span>
-          </div>
-        </div>
+        <div ng-include="'breakdown.html'"></div>
       </div>
 
     </div>

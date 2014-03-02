@@ -79,7 +79,8 @@
         filename="components/jqplot/jquery.jqplot.min.css") }}"/>
 
     {% assets output="gen/pptwitter-css.css",
-        "css/theme.css" %}
+        "css/theme.css",
+        "css/fonts.css" %}
       <link rel="stylesheet" href="{{ ASSET_URL }}"/>
     {% endassets %}
 
@@ -92,15 +93,27 @@
 
   <body>
     <div ng-controller="AppCtrl">
-      <div class="title">
-        <a href="#/" title="powerpoetry.org">
-          <img src="{{ url_for("static", filename="img/powerpoetry_logo_0.jpg") }}"/>
-        </a>
+      <div class="title text-center container">
+        <h1 class="banner kankin">
+          <a href="#/" title="powerpoetry.org">
+            #POETRYWARS
+          </a>
+        </h1>
+
+        <div class="top-menu-left">
+          <span>
+            <a href="/">Home</a>&nbsp;&nbsp;|&nbsp;
+          </span>
+          <span>
+            <a href="http://powerpoetry.org/about">About</a>
+          </span>
+        </div>
+
+        <div class="text-center hidden-xs">
+          <h2 class="subtitle kankin">Poetry by any means necessary<br/></h2>
+        </div>
 
         <div class="top-menu">
-          <span>
-            <a href="http://powerpoetry.org/about">About</a>&nbsp;&nbsp;|&nbsp;
-          </span>
           <iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com%2Fpowerpoetry%2F&amp;width&amp;layout=button_count&amp;action=like&amp;show_faces=true&amp;share=true&amp;height=21&amp;width=50" scrolling="no" frameborder="0" style="border:none; overflow:hidden; height:21px; width:140px;" allowTransparency="true"></iframe>
         </div>
       </div>
@@ -123,6 +136,9 @@
     </div>
 
     <footer class="container text-center">
+      <a href="http://powerpoetry.org" title="powerpoetry.org">
+        <img src="{{ url_for("static", filename="img/powerpoetry_logo_0.jpg") }}"/>
+      </a>
       <ul class="list-inline">
         <li><a href="http://powerpoetry.org/about">About</a></li>
         <li><a href="http://powerpoetry.org/blog">Blog</a></li>
@@ -153,6 +169,25 @@
       <button class="btn btn-success" ng-click="$close(true)">
         Ok
       </button>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="breakdown.html">
+    <div class="breakdown">
+      <div class="pull-left">Sentiment:&nbsp;</div>
+      <div class="progress-bar-yellow" progressbar max="100" value="((tweet.sentiment))">
+        <span>((tweet.sentiment))%</span>
+      </div>
+
+      <div class="pull-left">Language:&nbsp;</div>
+      <div class="progress-bar-blue" progressbar max="100" value="((tweet.language))">
+        <span>((tweet.language))%</span>
+      </div>
+
+      <div class="pull-left">Poetic:&nbsp;</div>
+      <div class="progress-bar-red" progressbar max="100" value="((tweet.poetic))">
+        <span>((tweet.poetic))%</span>
+      </div>
     </div>
   </script>
 </html>

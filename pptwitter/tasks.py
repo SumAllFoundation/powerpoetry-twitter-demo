@@ -54,6 +54,7 @@ def process_tweet(tweet, score):
     avgscore = sum(score.values()) / len(score)
     screen_name = tweet.user.screen_name
     local_tweet_id = Tweet.create(
+        created_at=tweet.created_at,
         text=tweet.text,
         tweet_id=tweet.id,
         tweeted_by=screen_name,

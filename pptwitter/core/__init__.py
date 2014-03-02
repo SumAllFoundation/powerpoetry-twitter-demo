@@ -1,4 +1,5 @@
 from peewee import BaseModel
+from redis import Redis
 
 from ..app import app, assets, celery, compress, db  # NOQA
 
@@ -20,3 +21,6 @@ class Model(db.Model):
 
 
 db.Model = Model
+
+
+redis_twitter_cache = Redis(db=3, **app.config.get("REDIS"))
