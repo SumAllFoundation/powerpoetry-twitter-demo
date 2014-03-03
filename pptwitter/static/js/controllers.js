@@ -147,38 +147,38 @@ pptwitter.controller('PoeticCtrl', function($http, $route, $routeParams, $scope,
         return;
     }
 
-    $timeout(function() {
-        console.log('Fetching more tweets');
-        var params = {
-            ordering: '-created_at'
-        };
+    // $timeout(function() {
+    //     console.log('Fetching more tweets');
+    //     var params = {
+    //         ordering: '-created_at'
+    //     };
 
-        if ($scope.tweets.length) {
-            params.id__gt = $scope.tweets[0].id;
-        }
+    //     if ($scope.tweets.length) {
+    //         params.id__gt = $scope.tweets[0].id;
+    //     }
 
-        $scope.busy = true;
-        $http({
-            url: '/api/tweet/',
-            method: 'GET',
-            params: params
-        }).success(function(data, status, headers, config) {
-            console.log('Received ' + data.objects.length + ' new tweets.');
-            $scope.busy = false;
-            if ($routeParams.slice == 'greatest') {
-                $scope.tweets = data.objects;
-                return;
-            }
+    //     $scope.busy = true;
+    //     $http({
+    //         url: '/api/tweet/',
+    //         method: 'GET',
+    //         params: params
+    //     }).success(function(data, status, headers, config) {
+    //         console.log('Received ' + data.objects.length + ' new tweets.');
+    //         $scope.busy = false;
+    //         if ($routeParams.slice == 'greatest') {
+    //             $scope.tweets = data.objects;
+    //             return;
+    //         }
 
-            data.objects.reverse();
-            angular.forEach(data.objects, function(t) {
-                $scope.tweets.unshift(t);
-            });
-        }).error(function(data, status, headers, config) {
-            console.log('Error fetching tweets.');
-            $scope.busy = false;
-        });
-    }, 8000);
+    //         data.objects.reverse();
+    //         angular.forEach(data.objects, function(t) {
+    //             $scope.tweets.unshift(t);
+    //         });
+    //     }).error(function(data, status, headers, config) {
+    //         console.log('Error fetching tweets.');
+    //         $scope.busy = false;
+    //     });
+    // }, 8000);
 });
 
 
