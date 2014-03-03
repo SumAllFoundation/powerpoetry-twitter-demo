@@ -5,9 +5,9 @@
     <div class="row">
       <div class="col-sm-4">
 
-        <div class="text-center" >
-          <h4>RULES</h4>
-          <div class="rules">
+        <div class="text-center" ng-init="collapseRules = Data.isPhone">
+          <h4 ng-click="collapseRules = !collapseRules">RULES</h4>
+          <div collapse="collapseRules" class="rules">
             <ol>
               <li>
                 <a href="https://twitter.com/intent/tweet?button_hashtag=poetrywars" class="twitter-hashtag-button"
@@ -21,9 +21,9 @@
           <br/>
         </div>
 
-        <div class="text-center">
-          <h4>BADGES</h4>
-          <div class="spoils">
+        <div class="text-center" ng-init="collapseBadges = Data.isPhone">
+          <h4 ng-click="collapseBadges = !collapseBadges">BADGES</h4>
+          <div collapse="collapseBadges" class="spoils">
             <ul class="list-inline">
               <li ng-repeat="b in badges">
                 <a ng-class="{selected: b.selected}" ng-click="selectBadge(b)">
@@ -43,32 +43,34 @@
       </div>
 
       <div class="col-sm-4">
-
-        <div class="text-center main-tweet-text">
-          <h4>TWEET</h4>
-          <strong>&ldquo;</strong>((tweet.text))<strong>&rdquo;</strong><br/>
-          <i>
-            <a href="#/poet/((tweet.tweeted_by))">
-              <img class="badge-small" ng-src="/badge/((tweet.tweeted_by))"/>
-              @((tweet.tweeted_by))
-            </a>
-          </i>
-          <div class="margin-center" raty tweet="tweet"></div>
-          <br/><br/>
+        <div class="text-center">
+          <h4 ng-click="collapseTweet = !collapseTweet">TWEET</h4>
+          <div class="main-tweet-text" collapse="collapseTweet">
+            <strong>&ldquo;</strong>((tweet.text))<strong>&rdquo;</strong><br/>
+            <i>
+              <a href="#/poet/((tweet.tweeted_by))">
+                <img class="badge-small" ng-src="/badge/((tweet.tweeted_by))"/>
+                @((tweet.tweeted_by))
+              </a>
+            </i>
+            <div class="margin-center" raty tweet="tweet"></div>
+            <br/>
+          </div>
+          <br/>
         </div>
 
         <div class="score text-center">
-          <h4>SCORE</h4>
-          <h3>
-            ((tweet.score | number:2))%
-          </h3>
-        </div>
-        <br/>
+          <h4 ng-click="collapseScore = !collapseScore">SCORE</h4>
+          <div collapse="collapseScore">
+            <h3>
+              ((tweet.score | number:2))%
+            </h3>
+            <br/>
 
-        <div class="text-center">
-          <div ng-include="'breakdown.html'"></div>
-          <a class="hidden-xs" href="http://www.powerpoetry.org/poetrywars">Scoring Strategy</a>
-          <br/><br/>
+            <div ng-include="'breakdown.html'"></div>
+            <a class="hidden-xs" href="http://www.powerpoetry.org/poetrywars">Scoring Strategy</a>
+            <br/><br/>
+          </div>
         </div>
       </div>
 
@@ -120,13 +122,21 @@
                 </div>
                 <img class="badge-small" ng-src="/badge/((t.tweeted_by))"/>
                 <i><a href="#/poet/((t.tweeted_by))">@((t.tweeted_by))</a></i>
-                <div class="pull-right" raty tweet="t"></div><br/>
+                <div class="pull-right">
+                  <div style="position: relative; margin-top: -5px;">
+                    <i class="glyphicon glyphicon-star" style="font-size: 2.8em; color:#FFD801"></i>
+                    <strong style="font-size: 0.7em; position: absolute; left:10px; top: 12px; z-index: 9999;">
+                      ((t.rating | number:1))
+                    </strong>
+                  </div>
+                </div><br/>
 
-                <div class="tweet-text" ng-click="Data.go('poetic/' + slice + '/' + t.id)">
+                <div class="tweet-text">
                   <strong>((t.score))%</strong>
-                  <strong>&ldquo;</strong>((t.text))<strong>&rdquo;</strong>
+                  <strong>&ldquo;</strong><span ng-click="Data.go('poetic/' + slice + '/' + t.id)">((t.text))</span><strong>&rdquo;</strong>
                   <div class="text-left" style="color: #aaa; margin-top: 5px; margin-bottom: -5px;">
                     <small>((t.created_at | date:'MMM dd, yyyy @ h:mm a'))</small>
+                    <div class="pull-right" raty tweet="t"></div><br/>
                   </div>
                 </div>
               </div>

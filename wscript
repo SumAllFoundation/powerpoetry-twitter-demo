@@ -105,7 +105,7 @@ def stage(ctx):
         "gunicorn pptwitter.app:app "
         "--bind unix:env/gunicorn_flask.sock "
         "--pid $VIRTUAL_ENV/run/gunicorn.pid "
-        "--workers 2 "
+        "--workers 6 "
         "--daemon"))
 
 

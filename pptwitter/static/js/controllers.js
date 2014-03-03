@@ -97,7 +97,12 @@ pptwitter.controller('PoeticCtrl', function($http, $route, $routeParams, $scope,
     console.log('Loading PoeticCtrl...');
     $scope.Data = Data;
     $scope.tweet = parseInt($routeParams.tweet) ? tweet : tweet.objects[0];
-    console.log(tweet)
+
+    $scope.Data.isPhone = $(window).width() < 768;
+    $(window).resize(function() {
+        $scope.Data.isPhone = $(window).width() < 768;
+        $scope.$apply();
+    });
 
     if ($routeParams.slice == 'leaders') {
         $scope.users = data.objects;

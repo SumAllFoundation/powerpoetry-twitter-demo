@@ -156,7 +156,7 @@ class TweetResource(RestResource):
             score_col.alias('score'),
             count_col.alias('count'),
             confidence_col.alias('confidence')
-        ).group_by(Tweet.tweeted_by).order_by(confidence_col.desc())
+        ).group_by(Tweet.tweeted_by).order_by(score_col.desc())
 
         return jsonify({
             "meta": {},
