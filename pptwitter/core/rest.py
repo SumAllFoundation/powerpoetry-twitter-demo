@@ -71,6 +71,14 @@ class RestResource(RestResource):
                 return MultiDict(request.form)
             raise BadRequestException()
 
+    def get_request_metadata(self, paginated_query):
+        meta_data = super(RestResource, self).get_request_metadata(paginated_query)
+        if meta_data["next"]:
+            meta_data["next"] = request.path + "?" + meta_data["next"].split("?")[1]
+        if meta_data["previous"]:
+            meta_data["previous"] = request.path + "?" + meta_data["previous"].split("?")[1]
+        return meta_data
+
     def create(self):
         try:
             instance = self.create_(self.get_request_data())
@@ -133,8 +141,9 @@ class TweetResource(RestResource):
 
     def get_urls(self):
         return super(TweetResource, self).get_urls() + (
-            ('/score/', self.top_scores),
-            ('/score/<screen_name>/', self.user_score),
+            ("/score/", self.top_scores),
+            ("/score/<screen_name>/", self.user_score),
+            ("/rating/", self.top_ratings),
         )
 
     def get_query(self):
@@ -169,6 +178,28 @@ class TweetResource(RestResource):
             } for row in query]
         })
 
+    def top_ratings(self):
+        score_col = (Tweet.rating * Tweet.rate_count)
+        count_col = Tweet.rate_count
+        confidence_col = wilson_confidence_column(score_col, count_col, 3, 0.9)
+
+        query = Tweet.select(
+            Tweet,
+            Rating,
+            confidence_col.alias('confidence')
+        ).join(
+            Rating,
+            JOIN_LEFT_OUTER,
+            on=(
+                (Tweet.id == Rating.tweet) & (Rating.remote_addr == request.remote_addr)
+            ).alias("user_rating")
+        ).where(Tweet.rate_count > 0).order_by(confidence_col.desc())
+
+        if self.paginate_by or 'limit' in request.args:
+            return self.paginated_object_list(query)
+
+        return self.response(self.serialize_query(query))
+
     def user_score(self, screen_name):
         row = self.user_score_query(screen_name).get()
         return jsonify({
@@ -194,7 +225,6 @@ class RatingResource(RestResource):
 
     def get_urls(self):
         return super(RatingResource, self).get_urls() + (
-            ("/tweet/", self.top_tweets),
             ("/user/", self.top_users),
         )
 
@@ -211,32 +241,13 @@ class RatingResource(RestResource):
         data["remote_addr"] = request.remote_addr
         return super(RatingResource, self).edit_(data)
 
-    def top_tweets(self):
-        score_col = fn.Sum(Rating.rating)
-        count_col = fn.Count(Rating.id)
-        confidence_col = wilson_confidence_column(score_col, count_col, 3, 0.99)
+    def prepare_data(self, obj, data):
+        if hasattr(obj, "rate_count"):
+            data["rate_count"] = obj.rate_count
 
-        query = Rating.select(
-            Tweet,
-            score_col.alias('rating'),
-            count_col.alias('count'),
-            confidence_col.alias('confidence')
-        ).join(Tweet).group_by(Tweet.id).order_by(confidence_col.desc())
-
-        return jsonify({
-            "meta": {},
-            "objects": [{
-                "id": row.id,
-                "text": row.text,
-                "score": row.score,
-                "tweeted_by": row.tweeted_by,
-                "created_at": row.created_at,
-                "rating": row.rating,
-                "average": row.rating / row.count,
-                "confidence": row.confidence,
-                "count": row.count
-            } for row in query]
-        })
+        if hasattr(obj, "confidence"):
+            data["confidence"] = float(obj.confidence)
+        return data
 
     def top_users(self):
         score_col = fn.Sum(Rating.rating)

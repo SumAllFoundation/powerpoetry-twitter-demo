@@ -26,9 +26,16 @@ pptwitter.config(['$routeProvider', function($routeProvider) {
             resolve: {
                 data: pptwitter.apiResolver(
                     function(params) {
-                        return params.slice == 'leaders' ?
-                            'tweet/score/' :
-                            'tweet/';
+                        if (params.slice == 'leaders') {
+                            return 'tweet/score/';
+                        }
+                        if (params.slice == 'greatest') {
+                            return 'tweet/rating/';
+
+                        }
+                        if (params.slice == 'latest') {
+                            return 'tweet/';
+                        }
                     },
                     function(params) {
                         if (params.slice == 'leaders') {
