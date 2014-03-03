@@ -46,7 +46,12 @@
         <div class="text-center main-tweet-text">
           <h4>TWEET</h4>
           <strong>&ldquo;</strong>((tweet.text))<strong>&rdquo;</strong><br/>
-          <i><a href="#/poet/((tweet.tweeted_by))">@((tweet.tweeted_by))</a></i>
+          <i>
+            <a href="#/poet/((tweet.tweeted_by))">
+              <img class="badge-small" ng-src="/badge/((tweet.tweeted_by))"/>
+              @((tweet.tweeted_by))
+            </a>
+          </i>
           <div class="margin-center" raty tweet="tweet"></div>
           <br/><br/>
         </div>
@@ -86,7 +91,21 @@
               </div>
               <img class="badge-small" ng-src="/badge/((u.screen_name))"/>
               <i><a href="#/poet/((u.screen_name))">@((u.screen_name))</a></i><br/>
-              Total: ((u.score))  Avg: ((u.average | number:2)) Tweets: ((u.count))<br/>
+              <strong>
+                <small>
+                  <ul class="list-inline">
+                    <li>
+                      Total: ((u.score))
+                    <li/>
+                    <li>
+                      Avg: ((u.average | number:2))
+                    <li/>
+                    <li>
+                      Tweets: ((u.count))
+                    <li/>
+                  </ul>
+                </small>
+              </strong>
             </div>
           </div>
 
