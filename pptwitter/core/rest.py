@@ -193,7 +193,7 @@ class TweetResource(RestResource):
             on=(
                 (Tweet.id == Rating.tweet) & (Rating.remote_addr == request.remote_addr)
             ).alias("user_rating")
-        ).where(Tweet.rate_count > 0).order_by(confidence_col.desc())
+        ).where(Tweet.rate_count > 0).order_by(confidence_col.desc(), Tweet.score.desc())
 
         if self.paginate_by or 'limit' in request.args:
             return self.paginated_object_list(query)

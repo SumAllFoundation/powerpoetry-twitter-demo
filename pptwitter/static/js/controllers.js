@@ -42,7 +42,7 @@ pptwitter.config(['$routeProvider', function($routeProvider) {
                             return {};
                         }
                         if (params.slice == 'greatest') {
-                            return {ordering: '-score'};
+                            return {};
 
                         }
                         if (params.slice == 'latest') {
