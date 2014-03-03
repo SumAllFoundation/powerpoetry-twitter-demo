@@ -66,7 +66,7 @@ def process_tweet(tweet, score):
     logger.info('%s @%s %s...: %.1f%%' % (tweet.id, screen_name, tweet.text[:20], avgscore))
     logger.info("%s: @%s Your poem scored %.1f%%" % (tweet.id, screen_name, avgscore))
     if app.config.get("TWITTER", "update_status"):
-        link = "%s/?route=poetic/%s" % (app.config.get("DOMAIN"), local_tweet_id)
+        link = "%s/?route=poetic/latest/%s" % (app.config.get("DOMAIN"), local_tweet_id)
         message_tmpl = "@%s Your poem scored %.1f%%. For a detailed explanation see: %s"
         status = message_tmpl % (screen_name, avgscore, link)
         try:
