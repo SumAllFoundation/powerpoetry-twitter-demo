@@ -63,7 +63,7 @@
           <h4 ng-click="collapseScore = !collapseScore">SCORE</h4>
           <div collapse="collapseScore">
             <h3>
-              ((tweet.score | number:2))%
+              ((tweet.score | number:0)) Points
             </h3>
             <br/>
 
@@ -132,10 +132,10 @@
                 </div><br/>
 
                 <div class="tweet-text">
-                  <strong>((t.score))%</strong>
                   <strong>&ldquo;</strong><span ng-click="Data.go('poetic/' + slice + '/' + t.id)">((t.text))</span><strong>&rdquo;</strong>
-                  <div class="text-left" style="color: #aaa; margin-top: 5px; margin-bottom: -5px;">
-                    <small>((t.created_at | date:'MMM dd, yyyy @ h:mm a'))</small>
+                  <div class="text-left" style="margin-top: 5px; margin-bottom: -5px;">
+                    <strong style="color: #999;"><small>((t.score)) pts</small></strong>&nbsp;
+                    <small style="color: #aaa;">((t.created_at | date:'MMM dd, yyyy@h:mm a'))</small>&nbsp;&nbsp;
                     <div class="pull-right" raty tweet="t"></div><br/>
                   </div>
                 </div>
