@@ -40,9 +40,9 @@ def badge(screen_name):
                 badge = 5
             elif score > 10000:
                 badge = 4
-            elif score > 4000:
+            elif score > 2000:
                 badge = 3
-            elif score > 500:
+            elif score > 200:
                 badge = 2
             elif score > 0:
                 badge = 1

@@ -47,11 +47,11 @@ pptwitter.badges = [{
 },{
     badge: 'Master of Oxymoron',
     description: 'Oxymoron: a short phrase that appears self-contradictory. i.e wise fool, old child, black light, et cetera. Love them.',
-    threshold: 500
+    threshold: 200
 },{
     badge: 'Prince of Hyperbole',
     description: 'Hyperbole: A bold, deliberate overstatement, e.g., "I\'d give my right arm for a slice of pizza" Not intended to be taken literally it is used as a means of emphasizing the truth of a statement.',
-    threshold: 4000
+    threshold: 2000
 },{
     badge: 'King of Simile',
     description: 'Simile: a comparison using “like” or “as," e.g. you are as beautiful as a rose.',
