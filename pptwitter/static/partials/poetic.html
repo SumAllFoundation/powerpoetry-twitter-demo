@@ -21,7 +21,7 @@
         </div>
 
         <div class="text-center">
-          <h4>SPOILS</h4>
+          <h4>BADGES</h4>
           <div class="spoils">
             <ul class="list-inline">
               <li ng-repeat="b in badges">
@@ -111,7 +111,7 @@
 
           <div ng-if="tweets" when-scrolled="nextPage" busy="busy" class="tweets-container">
             <div class="tweet" ng-repeat="t in tweets">
-              <div ng-click="Data.go('poetic/' + slice + '/' + t.id)">
+              <div>
                 <div class="pull-left twitter-pic">
                   <a href="http://www.twitter.com/((t.tweeted_by))">
                     <img ng-src="/twitter-pic/((t.tweeted_by))"/>
@@ -121,11 +121,11 @@
                 <i><a href="#/poet/((t.tweeted_by))">@((t.tweeted_by))</a></i>
                 <div class="pull-right" raty tweet="t"></div><br/>
 
-                <div class="tweet-text">
+                <div class="tweet-text" ng-click="Data.go('poetic/' + slice + '/' + t.id)">
                   <strong>((t.score))%</strong>
                   <strong>&ldquo;</strong>((t.text))<strong>&rdquo;</strong>
                   <div class="text-left" style="color: #aaa; margin-top: 5px; margin-bottom: -5px;">
-                    <small>((tweet.created_at | date:'MMM dd, yyyy @ h:mm a'))</small>
+                    <small>((t.created_at | date:'MMM dd, yyyy @ h:mm a'))</small>
                   </div>
                 </div>
               </div>

@@ -125,6 +125,7 @@ h4 {
   color: orange;
   font-size: 3em;
   text-shadow: 2px 2px #ddd;
+  font-family: "Comic Sans MS", cursive, sans-serif;
 }
 
 .breakdown {
@@ -311,7 +312,8 @@ input.ng-valid.ng-dirty {
 }
 
 .poet-progress {
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
 }
 
 .poet-progress small {
@@ -360,7 +362,7 @@ input.ng-valid.ng-dirty {
   .banner a {
     position: relative;
     top: 20px;
-    font-size: 1.5em;
+    font-size: 1.2em;
     color: #000;
   }
 

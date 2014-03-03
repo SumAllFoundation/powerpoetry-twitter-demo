@@ -4,7 +4,7 @@
 pptwitter.config(['$routeProvider', function($routeProvider) {
     console.log('Setting up routes...');
     $routeProvider.
-        when('/', {redirectTo: '/poetic/latest/1'}).
+        when('/', {redirectTo: '/poetic/latest/0'}).
         when('/poet/:poet', {
             templateUrl: 'static/partials/poet.html',
             controller: 'PoetCtrl',
@@ -43,9 +43,17 @@ pptwitter.config(['$routeProvider', function($routeProvider) {
                         }
                     }
                 ),
-                tweet: pptwitter.apiResolver(function(params) {
-                    return 'tweet/' + params.tweet;
-                })
+                tweet: function($injector, $route) {
+                    var tweet = parseInt($route.current.params.tweet);
+                    if (tweet) {
+                        return pptwitter.apiResolver('tweet/' + tweet)($injector, $route);
+                    }
+
+                    return pptwitter.apiResolver('tweet/', {
+                        ordering: '-id',
+                        limit: 1
+                    })($injector, $route);
+                }
             }
         }).
         otherwise({
@@ -88,7 +96,8 @@ pptwitter.controller('AppCtrl', function($rootScope, $scope, $timeout, $location
 pptwitter.controller('PoeticCtrl', function($http, $route, $routeParams, $scope, $timeout, tweet, data, Data) {
     console.log('Loading PoeticCtrl...');
     $scope.Data = Data;
-    $scope.tweet = tweet;
+    $scope.tweet = parseInt($routeParams.tweet) ? tweet : tweet.objects[0];
+    console.log(tweet)
 
     if ($routeParams.slice == 'leaders') {
         $scope.users = data.objects;
