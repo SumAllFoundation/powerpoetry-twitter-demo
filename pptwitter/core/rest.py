@@ -214,7 +214,7 @@ class RatingResource(RestResource):
     def top_tweets(self):
         score_col = fn.Sum(Rating.rating)
         count_col = fn.Count(Rating.id)
-        confidence_col = wilson_confidence_column(score_col, count_col, 3, 0.95)
+        confidence_col = wilson_confidence_column(score_col, count_col, 3, 0.99)
 
         query = Rating.select(
             Tweet,
@@ -241,7 +241,7 @@ class RatingResource(RestResource):
     def top_users(self):
         score_col = fn.Sum(Rating.rating)
         count_col = fn.Count(Rating.id)
-        confidence_col = wilson_confidence_column(score_col, count_col, 3, 0.95)
+        confidence_col = wilson_confidence_column(score_col, count_col, 3, 0.99)
         query = Rating.select(
             Tweet.tweeted_by,
             score_col.alias('rating'),
