@@ -30,8 +30,13 @@ h4 {
   margin-right: auto;
   text-align: left;
   position: relative;
-  left: -5px;
+  left: -25px;
   height: 132px;
+}
+
+.rules a {
+  position: relative;
+  top: 5px;
 }
 
 .rules b {
